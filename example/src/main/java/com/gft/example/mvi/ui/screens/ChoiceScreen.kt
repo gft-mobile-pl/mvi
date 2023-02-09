@@ -18,6 +18,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.SavedStateHandle
 import com.gft.example.mvi.ui.screens.ChoiceNavigationEffect.NavigateToDetails
 import com.gft.example.mvi.ui.screens.ChoiceViewEffect.ShowToast
 import com.gft.example.mvi.ui.screens.ChoiceViewEvent.OnDrawNumberClicked
@@ -122,6 +123,7 @@ fun ChoiceScreen(
 @Composable
 fun ChoiceScreenPreview() {
     ChoiceScreen(
+        viewModel = ChoiceViewModel(SavedStateHandle()),
         onNavigateToDetails = {}
     )
 }

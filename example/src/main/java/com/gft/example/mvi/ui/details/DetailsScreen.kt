@@ -34,5 +34,5 @@ fun DetailsScreen(
 @Preview(showSystemUi = true, heightDp = 800)
 @Composable
 fun DetailsScreenPreview() {
-    DetailsScreen("5")
+    DetailsScreen("5", DetailsViewModel("5"))
 }
