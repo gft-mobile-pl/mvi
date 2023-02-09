@@ -48,7 +48,7 @@ android {
 }
 
 dependencies {
-    implementation project(':mvi')
+    implementation project(':mvi-compose')
 
     implementation "androidx.core:core-ktx:$core_ktx_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_runtime_ktx_version"

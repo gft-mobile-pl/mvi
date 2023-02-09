@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "MVI"
-include ':example'
-include ':mvi'
+include ':example-compose'
+include ':mvi-compose'

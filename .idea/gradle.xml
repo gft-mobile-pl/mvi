@@ -10,8 +10,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/example" />
-            <option value="$PROJECT_DIR$/mvi" />
+            <option value="$PROJECT_DIR$/example-compose" />
+            <option value="$PROJECT_DIR$/mvi-compose" />
           </set>
         </option>
       </GradleProjectSettings>
