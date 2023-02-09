@@ -34,6 +34,8 @@ fun ChoiceScreen(
     viewModel: ChoiceViewModel = koinViewModel(),
     onNavigateToDetails: (String) -> Unit
 ) {
+    val context = LocalContext.current
+
     NavigationEffect(viewModel) { effect ->
         when (effect) {
             is NavigateToDetails -> {
@@ -42,7 +44,6 @@ fun ChoiceScreen(
         }
     }
 
-    val context = LocalContext.current
     ViewEffect(viewModel) { effect ->
         when (effect) {
             is ShowToast -> Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
