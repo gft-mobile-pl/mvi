@@ -18,20 +18,22 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.SavedStateHandle
 import com.gft.example.mvi.ui.screens.ChoiceNavigationEffect.NavigateToDetails
 import com.gft.example.mvi.ui.screens.ChoiceViewEffect.ShowToast
 import com.gft.example.mvi.ui.screens.ChoiceViewEvent.OnDrawNumberClicked
 import com.gft.example.mvi.ui.screens.ChoiceViewEvent.OnShowDetailsClicked
 import com.gft.example.mvi.ui.screens.ChoiceViewEvent.OnShowToastClicked
+import com.gft.mvi.MviViewModel
 import com.gft.mvi.NavigationEffect
 import com.gft.mvi.ViewEffect
+import com.gft.mvi.test.TestMviViewModel
+import com.gft.mvi.test.toViewModel
 import com.gft.mvi.viewState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ChoiceScreen(
-    viewModel: ChoiceViewModel = koinViewModel(),
+    viewModel: MviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect> = koinViewModel<ChoiceViewModel>(),
     onNavigateToDetails: (String) -> Unit
 ) {
     val context = LocalContext.current
@@ -124,7 +126,7 @@ fun ChoiceScreen(
 @Composable
 fun ChoiceScreenPreview() {
     ChoiceScreen(
-        viewModel = ChoiceViewModel(SavedStateHandle()),
+        viewModel = ChoiceViewState(randomNumber = 16).toViewModel(),
         onNavigateToDetails = {}
     )
 }

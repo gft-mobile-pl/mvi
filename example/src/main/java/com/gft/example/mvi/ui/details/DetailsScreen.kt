@@ -9,6 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import com.gft.mvi.MviViewModel
+import com.gft.mvi.NavigationEffect
+import com.gft.mvi.ViewEffect
+import com.gft.mvi.ViewEvent
+import com.gft.mvi.test.toViewModel
 import com.gft.mvi.viewState
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -16,7 +21,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun DetailsScreen(
     id: String,
-    viewModel: DetailsViewModel = koinViewModel { parametersOf(id) }
+    viewModel: MviViewModel<DetailsViewState, ViewEvent, NavigationEffect, ViewEffect> = koinViewModel<DetailsViewModel> { parametersOf(id) }
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -34,5 +39,8 @@ fun DetailsScreen(
 @Preview(showSystemUi = true, heightDp = 800)
 @Composable
 fun DetailsScreenPreview() {
-    DetailsScreen("5", DetailsViewModel("5"))
+    DetailsScreen(
+        id = "5",
+        viewModel = DetailsViewState("#5").toViewModel()
+    )
 }
