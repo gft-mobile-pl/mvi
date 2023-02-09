@@ -29,3 +29,6 @@ interface MviViewModel<VS : ViewState, EV : ViewEvent, NE : NavigationEffect, VE
             else throw TypeCastException("MviViewModel.viewState extension supports MutableState only!")
         }
 }
+
+inline val <VS : ViewState> MviViewModel<VS, *, *, *>.viewState: VS
+    get() = viewStates.value
