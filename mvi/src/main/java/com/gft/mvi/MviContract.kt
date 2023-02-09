@@ -1,6 +1,11 @@
 package com.gft.mvi
 
-interface ViewState
+interface ViewState {
+    companion object {
+        val Empty = object : ViewState {}
+    }
+}
+
 interface ViewEffect
 interface NavigationEffect
 interface ViewEvent
