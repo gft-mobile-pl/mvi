@@ -12,8 +12,8 @@ data class ChoiceViewState(
 ) : ViewState, Parcelable
 ```
 
-You don't have to implement `Parcelable` if you do not intent to store the view state in `SavedStateHandle`.
-{: .alert .alert-info}
+> ℹ You don't have to implement `Parcelable` if you do not intent to store the view state in `SavedStateHandle`.
+
 
 ```kotlin
 sealed interface ChoiceViewEvent : ViewEvent {
