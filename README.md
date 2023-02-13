@@ -51,8 +51,8 @@ class ChoiceViewModel(
 }
 ```
 `BaseMviViewModel` accepts two parameters:
-- `initialViewState` - in the `Compose` world the initial state of the view is always required ⚠. 
-Note that usually this doesn't have to be "correct data" right away if you know that you will provide the real data synchronously 
+- `initialViewState` - in the `Compose` world the initial state of the view is always required. 
+**Note:** initial data may not be a "correct data" if you plan to provide the real data synchronously 
 in the `init` block (e.g. using `launch(start = CoroutineStart.UNDISPATCHED) {}`) 
 - `savedStateHandle` (optional) - if you pass `SavedStateHandle` to the `BaseMviViewModel` it will automatically save/restore the view state when activity is killed/recreated.
 
