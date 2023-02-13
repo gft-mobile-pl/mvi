@@ -8,6 +8,7 @@ buildscript {
         compose_navigation_version = '2.5.3'
         compose_activity_version ='1.6.1'
         compose_lifecycle_viewmodel = '2.5.1'
+        compose_lifecycle_runtime = '2.6.0-beta01'
 
         koin_version = '3.3.2'
         koin_android_version= "3.3.2"
@@ -18,6 +19,6 @@ buildscript {
 plugins {
     id 'com.android.application' version '7.4.0' apply false
     id 'com.android.library' version '7.4.0' apply false
-    id 'org.jetbrains.kotlin.android' version '1.7.0' apply false
-    id 'org.jetbrains.kotlin.jvm' version '1.7.0' apply false
+    id 'org.jetbrains.kotlin.android' version '1.8.0' apply false
+    id 'org.jetbrains.kotlin.jvm' version '1.8.0' apply false
 }
