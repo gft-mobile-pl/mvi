@@ -3,13 +3,6 @@
 ## Usage
 
 ### Define contract between view and view model
-
-#### View state
-- Your view state class has to implemented `ViewState` marker interface.
-- View events have to implemented `ViewState` marker interface.
-- Navigation effects have to implemented `ViewState` marker interface.
-- View effects have to implemented `ViewState` marker interface.
-- ℹ You don't have to implement `Parcelable` if you do not intent to store the view state in `SavedStateHandle`.
 ```kotlin
 @Parcelize
 data class ChoiceViewState(
@@ -30,4 +23,8 @@ sealed interface ChoiceViewEffect : ViewEffect {
     data class ShowToast(val message: String) : ChoiceViewEffect
 }
 ```
-
+- Your view state class has to implemented `ViewState` marker interface.
+- View events have to implemented `ViewState` marker interface.
+- Navigation effects have to implemented `ViewState` marker interface.
+- View effects have to implemented `ViewState` marker interface.
+- ℹ You don't have to implement `Parcelable` if you do not intent to store the view state in `SavedStateHandle`.
