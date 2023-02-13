@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gft.mvi.MviViewModel
 import com.gft.mvi.NavigationEffect
 import com.gft.mvi.ViewEffect
@@ -23,12 +24,14 @@ fun DetailsScreen(
     id: String,
     viewModel: MviViewModel<DetailsViewState, ViewEvent, NavigationEffect, ViewEffect> = koinViewModel<DetailsViewModel> { parametersOf(id) }
 ) {
+    val viewState = viewModel.viewStates.collectAsStateWithLifecycle()
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = viewModel.viewState.message,
+            text = viewState.value.message,
             style = TextStyle.Default.copy(
                 fontSize = 144.sp
             )

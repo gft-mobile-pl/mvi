@@ -26,9 +26,8 @@ import com.gft.example.mvi.ui.screens.ChoiceViewEvent.OnShowToastClicked
 import com.gft.mvi.MviViewModel
 import com.gft.mvi.NavigationEffect
 import com.gft.mvi.ViewEffect
-import com.gft.mvi.test.TestMviViewModel
+import com.gft.mvi.ViewState
 import com.gft.mvi.test.toViewModel
-import com.gft.mvi.viewState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -52,71 +51,73 @@ fun ChoiceScreen(
         }
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically)
-    ) {
-        Card(
-            modifier = Modifier.width(180.dp)
+    ViewState(viewModel) { viewState ->
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically)
         ) {
-            Column(
-                modifier = Modifier.padding(12.dp)
+            Card(
+                modifier = Modifier.width(180.dp)
             ) {
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { viewModel.onEvent(OnShowToastClicked) }
+                Column(
+                    modifier = Modifier.padding(12.dp)
                 ) {
-                    Text(text = "Show toast")
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { viewModel.onEvent(OnShowToastClicked) }
+                    ) {
+                        Text(text = "Show toast")
+                    }
                 }
+
             }
 
-        }
-
-        Card(
-            modifier = Modifier.width(180.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+            Card(
+                modifier = Modifier.width(180.dp)
             ) {
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { viewModel.onEvent(OnShowDetailsClicked("1")) }
+                Column(
+                    modifier = Modifier.padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text(text = "Show details #1")
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { viewModel.onEvent(OnShowDetailsClicked("1")) }
+                    ) {
+                        Text(text = "Show details #1")
+                    }
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { viewModel.onEvent(OnShowDetailsClicked("2")) }
+                    ) {
+                        Text(text = "Show details #2")
+                    }
                 }
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { viewModel.onEvent(OnShowDetailsClicked("2")) }
-                ) {
-                    Text(text = "Show details #2")
-                }
+
             }
 
-        }
-
-        Card(
-            modifier = Modifier.width(180.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+            Card(
+                modifier = Modifier.width(180.dp)
             ) {
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { viewModel.onEvent(OnDrawNumberClicked) }
+                Column(
+                    modifier = Modifier.padding(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text(text = "Draw a number")
-                }
-                Text(text = "Random number")
-                Text(
-                    text = "${viewModel.viewState.randomNumber}",
-                    style = TextStyle.Default.copy(
-                        fontSize = 72.sp
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { viewModel.onEvent(OnDrawNumberClicked) }
+                    ) {
+                        Text(text = "Draw a number")
+                    }
+                    Text(text = "Random number")
+                    Text(
+                        text = "${viewState.value.randomNumber}",
+                        style = TextStyle.Default.copy(
+                            fontSize = 72.sp
+                        )
                     )
-                )
+                }
             }
         }
     }
