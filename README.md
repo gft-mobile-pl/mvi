@@ -66,6 +66,7 @@ fun ChoiceScreen(
         }
     }
 
+    // Option A
     ViewState(viewModel) {
         Text(
             text = "${viewState.randomNumber}",
@@ -74,17 +75,24 @@ fun ChoiceScreen(
             )
         )
     }
-}
-```
-Alternative view state consumption:
-```kotlin
+    
+    // Option B (less indents!)
     val viewState by viewState(viewModel)
-
     Text(
         text = "${viewState.randomNumber}",
         style = TextStyle.Default.copy(
             fontSize = 72.sp
         )
+    )
+}
+```
+```kotlin
+@Preview(showSystemUi = true, heightDp = 800)
+@Composable
+fun ChoiceScreenPreview() {
+    ChoiceScreen(
+        viewModel = ChoiceViewState(randomNumber = 16).toViewModel(), // uses TestMviViewModel under the hood
+        onNavigateToDetails = {}
     )
 }
 ```
