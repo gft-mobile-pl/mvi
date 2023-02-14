@@ -51,7 +51,7 @@ fun ChoiceScreen(
         }
     }
 
-    ViewState(viewModel) { viewState ->
+    ViewState(viewModel) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -112,7 +112,7 @@ fun ChoiceScreen(
                     }
                     Text(text = "Random number")
                     Text(
-                        text = "${viewState.value.randomNumber}",
+                        text = "${viewState.randomNumber}",
                         style = TextStyle.Default.copy(
                             fontSize = 72.sp
                         )
