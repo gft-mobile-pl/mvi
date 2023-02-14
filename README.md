@@ -147,3 +147,73 @@ class ChoiceViewModel ... {
     ...
 }
 ```
+
+### Use view model (Compose)
+
+#### Injecting view model
+
+```kotlin
+@Composable
+fun ChoiceScreen(
+    viewModel: MviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect> = viewModel<ChoiceViewModel>(),
+)
+```
+⚠ Generally you should type the `viewModel` parameter to the `MviViewModel<...>` interface. 
+Otherwise providing preview may be very hard especially if your view model has many dependencies (e.g. tons of use cases).
+
+
+If you really don't intend to use preview you may simplify the view model injection (still not recommended as makes testing harder):
+```kotlin
+@Composable
+fun ChoiceScreen(
+    viewModel: ChoiceViewModel = viewModel(),
+)
+```
+
+You may provide parameters to view models during injection:
+```kotlin
+class DetailsViewModelFactory(private val id: String) : ViewModelProvider.NewInstanceFactory() {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = DetailsViewModel(id) as T
+}
+
+@Composable
+fun DetailsScreen(
+    id: String,
+    viewModel: MviViewModel<DetailsViewState, ViewEvent, NavigationEffect, ViewEffect> = viewModel(factory = DetailsViewModelFactory(id)),
+) {
+
+}
+```
+
+#### Injecting view model with Koin
+
+First you need to declare view models in `module`.
+```kotlin
+val appUiModule = module {
+    viewModelOf(::ChoiceViewModel)
+    viewModel { parameters -> DetailsViewModel(parameters.get()) } // view model with parameter
+}
+```
+
+The injection is straightforward.
+```kotlin
+// view model without parameters (beside SavedStateHandle)
+@Composable
+fun ChoiceScreen(
+    viewModel: MviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect> = koinViewModel<ChoiceViewModel>(),
+    onNavigateToDetails: (String) -> Unit
+)
+
+// view models with parameters
+@Composable
+fun DetailsScreen(
+    id: String,
+    viewModel: MviViewModel<DetailsViewState, ViewEvent, NavigationEffect, ViewEffect> = koinViewModel<DetailsViewModel> { parametersOf(id) }
+)
+```
+
+
+
+
+
+### Use view model (View) - TBD
