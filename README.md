@@ -139,7 +139,7 @@ If you extend `BaseMviViewModel` or your custom view model assigns `MutableState
 ```kotlin
 class ChoiceViewModel ... {
     ... 
-    private fun showToast() {
+    private fun navigateToCardDetails() {
         dispatchNavigationEffect(NavigateToDetails(event.id))
     }
     ...
