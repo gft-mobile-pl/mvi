@@ -1,5 +1,94 @@
 # MVI ViewModel
 
+## TL;DR
+```kotlin
+@Parcelize
+data class ChoiceViewState(
+    val randomNumber: Int
+) : ViewState, Parcelable
+
+sealed interface ChoiceViewEvent : ViewEvent {
+    data class OnShowDetailsClicked(val id: String) : ChoiceViewEvent
+    object OnDrawNumberClicked : ChoiceViewEvent
+    object OnShowToastClicked : ChoiceViewEvent
+}
+
+sealed interface ChoiceNavigationEffect : NavigationEffect {
+    data class NavigateToDetails(val id: String) : ChoiceNavigationEffect
+}
+
+sealed interface ChoiceViewEffect : ViewEffect {
+    data class ShowToast(val message: String) : ChoiceViewEffect
+}
+```
+```kotlin
+class ChoiceViewModel(
+    savedStateHandle: SavedStateHandle,
+) : BaseMviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect>(
+    ChoiceViewState(0), savedStateHandle
+) {
+    override fun onEvent(event: ChoiceViewEvent) {
+
+        when (event) {
+            is OnShowDetailsClicked -> {
+                dispatchNavigationEffect(NavigateToDetails(event.id))
+            }
+            OnDrawNumberClicked -> {
+                viewState = viewState.copy(
+                    randomNumber = Random.nextInt(0, 100)
+                )
+            }
+            OnShowToastClicked -> {
+                dispatchViewEffect(ChoiceViewEffect.ShowToast("Toast message!"))
+            }
+        }
+    }
+}
+```
+```kotlin
+@Composable
+fun ChoiceScreen(
+    viewModel: MviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect> = koinViewModel<ChoiceViewModel>(),
+    onNavigateToDetails: (String) -> Unit
+) {
+
+    NavigationEffect(viewModel) { effect ->
+        when (effect) {
+            is NavigateToDetails -> {
+                onNavigateToDetails(effect.id)
+            }
+        }
+    }
+
+    ViewEffect(viewModel) { effect ->
+        when (effect) {
+            is ShowToast -> Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    ViewState(viewModel) {
+        Text(
+            text = "${viewState.randomNumber}",
+            style = TextStyle.Default.copy(
+                fontSize = 72.sp
+            )
+        )
+    }
+}
+```
+Alternative view state consumption:
+```kotlin
+    val viewState by viewState(viewModel)
+
+    Text(
+        text = "${viewState.randomNumber}",
+        style = TextStyle.Default.copy(
+            fontSize = 72.sp
+        )
+    )
+}
+```
+
 ## Usage
 
 ### Define contract between view and view model
