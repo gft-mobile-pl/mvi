@@ -57,7 +57,7 @@ class ChoiceViewModel(
 
 `BaseMviViewModel` accepts two parameters:
 - `initialViewState` - in the MVI (and Compose) the initial state of the view is always required.<br />
-**Note:** initial data may not be a "correct" if you plan to provide the real data synchronously 
+ℹ initial data may not be a "correct" if you plan to provide the real data synchronously 
 in the `init` block (e.g. using `launch(start = CoroutineStart.UNDISPATCHED) {}`) 
 - `savedStateHandle` (optional) - if you pass `SavedStateHandle` to the `BaseMviViewModel` it will automatically save/restore the view state when activity is killed/recreated.
 
@@ -99,13 +99,15 @@ Special caution is required while defining and assigning fields at the same time
 ```kotlin
 override val viewEffects: StateFlow<ConsumableEvent<ChoiceViewEffect>?> = MutableStateFlow<ConsumableEvent<ChoiceViewEffect>?>(null)
 ```
-You should explicitly type the fields to `StateFlow<...>` - otherwise you will expose the `MutableStateFlow` (generally the type of the backing object). 
-Don't worry - you will be still able to mutate the view state with provided extension methods - read on. 
-
-As a rule of thumb you should use backing fields to avoid this inconvenience.
+⚠ You should explicitly type all MVI fields to `StateFlow<...>` - otherwise you will expose the assigned object (usually `MutableStateFlow`). As a rule of thumb you should use backing fields to avoid this inconvenience:
+```kotlin
+private val _viewEffects = MutableStateFlow<ConsumableEvent<ChoiceViewEffect>?>(null)
+override val viewEffects: StateFlow<ConsumableEvent<ChoiceViewEffect>?> = _viewEffect
+```
+Don't worry - you will be still able to mutate the view state even if you choose the first option (defining and assigning at the same time) - read on..
 
 #### Updating view state
-If you extend `BaseMviViewModel` or your custom view model assigns `MutableStateFlow` to `val viewStates: StateFlow<VS>` you may use `viewState` extension method to update the view state:
+If you extend `BaseMviViewModel` OR your custom view model assigns `MutableStateFlow` to `val viewStates: StateFlow<VS>` you may use `viewState` extension method to update the view state:
 
 ```kotlin
 class ChoiceViewModel ... {
@@ -120,7 +122,7 @@ class ChoiceViewModel ... {
 ```
 
 #### Dispatching view effects
-If you extend `BaseMviViewModel` or your custom view model assigns `MutableStateFlow` to `val viewEffects: StateFlow<ConsumableEvent<VE>?>` you may use `dispatchViewEffect` extension method:
+If you extend `BaseMviViewModel` OR your custom view model assigns `MutableStateFlow` to `val viewEffects: StateFlow<ConsumableEvent<VE>?>` you may use `dispatchViewEffect` extension method:
 
 ```kotlin
 class ChoiceViewModel ... {
@@ -131,10 +133,10 @@ class ChoiceViewModel ... {
     ...
 }
 ```
-**Note:** Most of the time you should not use view effects at all - even displaying the `AlertDialogs` should generally be managed with the view state.
+⚠ Most of the time you should not use view effects at all - even displaying the `AlertDialogs` should generally be managed with the view state.
 
 #### Dispatching navigation effects
-If you extend `BaseMviViewModel` or your custom view model assigns `MutableStateFlow` to `val navigationEffects: StateFlow<ConsumableEvent<NE>?>` you may use `dispatchNavigationEffect` extension method:
+If you extend `BaseMviViewModel` OR your custom view model assigns `MutableStateFlow` to `val navigationEffects: StateFlow<ConsumableEvent<NE>?>` you may use `dispatchNavigationEffect` extension method:
 
 ```kotlin
 class ChoiceViewModel ... {
