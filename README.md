@@ -1,5 +1,7 @@
 # MVI ViewModel
 
+[[_TOC_]]
+
 ## TL;DR
 ```kotlin
 @Parcelize
