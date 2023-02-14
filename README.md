@@ -105,7 +105,7 @@ Don't worry - you will be still able to mutate the view state with provided exte
 As a rule of thumb you should use backing fields to avoid this inconvenience.
 
 #### Updating view state
-If you extend `BaseMviViewModel` or your custom view model uses `MutableStateFlow` as `val viewStates: StateFlow<VS>` field you may use `viewState` extension method to update the view state:
+If you extend `BaseMviViewModel` or your custom view model assigns `MutableStateFlow` to `val viewStates: StateFlow<VS>` you may use `viewState` extension method to update the view state:
 
 ```kotlin
 class ChoiceViewModel ... {
@@ -119,8 +119,8 @@ class ChoiceViewModel ... {
 }
 ```
 
-#### Dispatching view effect
-If you extend `BaseMviViewModel` or your custom view model uses `MutableStateFlow` as `val viewEffects: StateFlow<ConsumableEvent<VE>?>` field you may use `dispatchViewEffect` extension method:
+#### Dispatching view effects
+If you extend `BaseMviViewModel` or your custom view model assigns `MutableStateFlow` to `val viewEffects: StateFlow<ConsumableEvent<VE>?>` you may use `dispatchViewEffect` extension method:
 
 ```kotlin
 class ChoiceViewModel ... {
@@ -133,14 +133,14 @@ class ChoiceViewModel ... {
 ```
 **Note:** Most of the time you should not use view effects at all - even displaying the `AlertDialogs` should generally be managed with the view state.
 
-#### Dispatching navigation effect
-If you extend `BaseMviViewModel` or your custom view model uses `MutableStateFlow` as `val navigationEffects: StateFlow<ConsumableEvent<NE>?>` field you may use `dispatchNavigationEffect` extension method:
+#### Dispatching navigation effects
+If you extend `BaseMviViewModel` or your custom view model assigns `MutableStateFlow` to `val navigationEffects: StateFlow<ConsumableEvent<NE>?>` you may use `dispatchNavigationEffect` extension method:
 
 ```kotlin
 class ChoiceViewModel ... {
     ... 
     private fun showToast() {
-        dispatchViewEffect(ChoiceViewEffect.ShowToast("Toast message!")) 
+        dispatchNavigationEffect(NavigateToDetails(event.id))
     }
     ...
 }
