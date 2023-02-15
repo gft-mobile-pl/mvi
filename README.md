@@ -126,14 +126,14 @@ sealed interface ChoiceViewEffect : ViewEffect {
     data class ShowToast(val message: String) : ChoiceViewEffect
 }
 ```
-ℹ Your view state doesn't have to implement `Parcelable` interface if you don't intend to store the view state in `SavedStateHandle`.
+> ℹ Your view state doesn't have to implement `Parcelable` interface if you don't intend to store the view state in `SavedStateHandle`.
 
-ℹ You don't have to define empty classes, e.g. if you don't need `view effect` simply don't define it. 
+> ℹ You don't have to define empty classes, e.g. if you don't need `view effect` simply don't define it. 
 
-ℹ `ViewState`, `ViewEvent`, `NavigationEffect`, `ViewEffect` are just marker interfaces. 
-Theoretically we would be just fine without them but:
-- they open possibility to create extensions methods which are scoped to the particular MVI contract parts,
-- they prevent various common mistakes like when the generic parameters are specified in a wrong order while defining view-model.
+> ℹ `ViewState`, `ViewEvent`, `NavigationEffect`, `ViewEffect` are just marker interfaces. 
+> Theoretically we would be just fine without them but:
+> - they open possibility to create extensions methods which are scoped to the particular MVI contract parts,
+> - they prevent various common mistakes like when the generic parameters are specified in a wrong order while defining view-model.
 
 
 ### Define view-model
@@ -198,7 +198,7 @@ Special caution is required while defining and assigning fields at the same time
 ```kotlin
 override val viewEffects: StateFlow<ConsumableEvent<ChoiceViewEffect>?> = MutableStateFlow<ConsumableEvent<ChoiceViewEffect>?>(null)
 ```
-⚠ You should explicitly type all MVI fields to `StateFlow<...>` - otherwise you will expose the assigned object (usually `MutableStateFlow`). As a rule of thumb you should use backing fields to avoid this inconvenience:
+> ⚠ You should explicitly type all MVI fields to `StateFlow<...>` - otherwise you will expose the assigned object (usually `MutableStateFlow`). As a rule of thumb you should use backing fields to avoid this inconvenience:
 ```kotlin
 private val _viewEffects = MutableStateFlow<ConsumableEvent<ChoiceViewEffect>?>(null)
 override val viewEffects: StateFlow<ConsumableEvent<ChoiceViewEffect>?> = _viewEffect
@@ -232,7 +232,7 @@ class ChoiceViewModel ... {
     ...
 }
 ```
-⚠ Most of the time you should not use view effects at all - even displaying the `AlertDialogs` should generally be managed with the view state.
+> ⚠ Most of the time you should not use view effects at all - even displaying the `AlertDialogs` should generally be managed with the view state.
 
 #### Dispatching navigation effects
 If you extend `BaseMviViewModel` OR your custom view-model assigns `MutableStateFlow` to `val navigationEffects: StateFlow<ConsumableEvent<NE>?>` you may use `dispatchNavigationEffect` extension method:
@@ -257,17 +257,16 @@ fun ChoiceScreen(
     viewModel: MviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect> = viewModel<ChoiceViewModel>(),
 )
 ```
-⚠ Generally you should type the `viewModel` parameter to the `MviViewModel<...>` interface. 
-Otherwise providing preview may be very hard especially if your view-model has many dependencies (e.g. tons of use cases).
-
-
-If you really don't intend to use preview you may simplify the view-model injection (still not recommended as makes testing harder):
-```kotlin
-@Composable
-fun ChoiceScreen(
-    viewModel: ChoiceViewModel = viewModel(),
-)
-```
+> ⚠ Generally you should type the `viewModel` parameter to the `MviViewModel<...>` interface. 
+> Otherwise providing preview may be very hard especially if your view-model has many dependencies (e.g. tons of use cases).
+>
+> If you really don't intend to use preview you may simplify the view-model injection (still not recommended as makes testing harder):
+> ```kotlin
+> @Composable
+> fun ChoiceScreen(
+>     viewModel: ChoiceViewModel = viewModel(),
+> )
+> ```
 
 You may provide parameters to view-models during injection:
 ```kotlin
@@ -311,6 +310,50 @@ fun DetailsScreen(
 )
 ```
 
+#### Handling view state changes.
+There are two equivalent methods of handling view state changes.
+
+First option is to use `ViewState` composable. Inside the passed content lambda there is a `viewState` property available which holds the latest view state.
+```kotlin
+@Composable
+fun ChoiceScreen(
+    viewModel: MviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect> = koinViewModel<ChoiceViewModel>(),
+    onNavigateToDetails: (String) -> Unit
+) {
+    ViewState(viewModel) {
+        Text(
+            text = "${viewState.randomNumber}",
+            style = TextStyle.Default.copy(
+                fontSize = 72.sp
+            )
+        )
+    }
+    ...
+}
+```
+>ℹ Although the `viewState` field is typed to `<VS : ViewState>` it is a delegate pointing to a `<State<VS : ViewState>>` under the hood.
+Thanks to this the whole view is not recomposed when the `viewState` changes - only the parts reading from `viewState` are recomposed.
+
+The second option is to use `by viewState(viewModel)` delegation:
+```kotlin
+@Composable
+fun ChoiceScreen(
+    viewModel: MviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect> = koinViewModel<ChoiceViewModel>(),
+    onNavigateToDetails: (String) -> Unit
+) {
+    val viewState by viewState(viewModel)
+    
+    Text(
+        text = "${viewState.randomNumber}",
+        style = TextStyle.Default.copy(
+            fontSize = 72.sp
+        )
+    )
+}
+```
+>ℹ Although the `viewState` variable is typed to `<VS : ViewState>` it is a delegate pointing to a `<State<VS : ViewState>>` under the hood.
+Thanks to this the whole view is not recomposed when the `viewState` changes - only the parts reading from `viewState` are recomposed.
+
 #### Handling navigation effects
 
 Use `NavigationEffect` composable method to handle navigation effects. 
@@ -330,7 +373,7 @@ fun ChoiceScreen(
     ...
 }
 ```
-ℹ Each navigation effect is provided only once. It won't be repeated even if the view is recreated.
+> ℹ Each navigation effect is provided only once. It won't be repeated even if the view is recreated.
 
 By default the `NavigationEffect` handles the navigation effects only if the view is at least in the `Lifecycle.State.STARTED` state.
 If the application is in background or user has navigated to any other screen the navigation effects are ignored.
@@ -346,7 +389,7 @@ NavigationEffect(
 
 }
 ```
-⚠ In Compose it is impossible to handle navigation effects when the view is not started even if you pass `Lifecycle.State.CREATED` as minimum view state.
+> ⚠ In Compose it is impossible to handle navigation effects when the view is not started even if you pass `Lifecycle.State.CREATED` as minimum view state.
 All the recompositions are suspended when the view is in stopped.
 
 #### Handling view effects
@@ -366,7 +409,7 @@ fun ChoiceScreen(
     ...
 }
 ```
-ℹ Each view effect is provided only once. It won't be repeated even if the view is recreated.
+> ℹ Each view effect is provided only once. It won't be repeated even if the view is recreated.
 
 By default the `ViewEffect` handles the view effects only if the view is at least in the `Lifecycle.State.STARTED` state.
 If the application is in background or user has navigated to any other screen the view effects are ignored.
@@ -382,7 +425,7 @@ ViewEffect(
 
 }
 ```
-⚠ In Compose it is impossible to handle view effects when the view is not started even if you pass `Lifecycle.State.CREATED` as minimum view state.
+> ⚠ In Compose it is impossible to handle view effects when the view is not started even if you pass `Lifecycle.State.CREATED` as minimum view state.
 All the recompositions are suspended when the view is in stopped.
 
 
