@@ -101,7 +101,7 @@ fun ChoiceScreenPreview() {
 
 ## Usage
 
-### Define contract between view and view model
+### Define contract between view and view-model
 - Your view state class has to implemented `ViewState` marker interface.
 - View events have to implemented `ViewEvent` marker interface.
 - Navigation effects have to implemented `NavigationEffect` marker interface.
@@ -133,10 +133,10 @@ sealed interface ChoiceViewEffect : ViewEffect {
 ℹ `ViewState`, `ViewEvent`, `NavigationEffect`, `ViewEffect` are just marker interfaces. 
 Theoretically we would be just fine without them but:
 - they open possibility to create extensions methods which are scoped to the particular MVI contract parts,
-- they prevent various common mistakes like when the generic parameters are specified in a wrong order while defining view model.
+- they prevent various common mistakes like when the generic parameters are specified in a wrong order while defining view-model.
 
 
-### Define view model
+### Define view-model
 
 #### Using `BaseMviViewModel`
 
@@ -178,7 +178,7 @@ This approach saves a bit of time as the rest of the fields are provided by the 
 
 #### Using `MviViewModel` interface
 
-Extending `BaseMviViewModel` is not mandatory - it is enough to implement the `MviViewModel`. This is very useful if you don't want to manage the ViewState "manually" inside the view model, 
+Extending `BaseMviViewModel` is not mandatory - it is enough to implement the `MviViewModel`. This is very useful if you don't want to manage the ViewState "manually" inside the view-model, 
 but rather fetch it from domain.
 
 ```kotlin
@@ -206,7 +206,7 @@ override val viewEffects: StateFlow<ConsumableEvent<ChoiceViewEffect>?> = _viewE
 Don't worry - you will be still able to mutate the view state even if you choose the first option (defining and assigning at the same time) - read on..
 
 #### Updating view state
-If you extend `BaseMviViewModel` OR your custom view model assigns `MutableStateFlow` to `val viewStates: StateFlow<VS>` you may use `viewState` extension method to update the view state:
+If you extend `BaseMviViewModel` OR your custom view-model assigns `MutableStateFlow` to `val viewStates: StateFlow<VS>` you may use `viewState` extension method to update the view state:
 
 ```kotlin
 class ChoiceViewModel ... {
@@ -221,7 +221,7 @@ class ChoiceViewModel ... {
 ```
 
 #### Dispatching view effects
-If you extend `BaseMviViewModel` OR your custom view model assigns `MutableStateFlow` to `val viewEffects: StateFlow<ConsumableEvent<VE>?>` you may use `dispatchViewEffect` extension method:
+If you extend `BaseMviViewModel` OR your custom view-model assigns `MutableStateFlow` to `val viewEffects: StateFlow<ConsumableEvent<VE>?>` you may use `dispatchViewEffect` extension method:
 
 ```kotlin
 class ChoiceViewModel ... {
@@ -235,7 +235,7 @@ class ChoiceViewModel ... {
 ⚠ Most of the time you should not use view effects at all - even displaying the `AlertDialogs` should generally be managed with the view state.
 
 #### Dispatching navigation effects
-If you extend `BaseMviViewModel` OR your custom view model assigns `MutableStateFlow` to `val navigationEffects: StateFlow<ConsumableEvent<NE>?>` you may use `dispatchNavigationEffect` extension method:
+If you extend `BaseMviViewModel` OR your custom view-model assigns `MutableStateFlow` to `val navigationEffects: StateFlow<ConsumableEvent<NE>?>` you may use `dispatchNavigationEffect` extension method:
 
 ```kotlin
 class ChoiceViewModel ... {
@@ -247,9 +247,9 @@ class ChoiceViewModel ... {
 }
 ```
 
-### Use view model (Compose)
+### Use view-model (Compose)
 
-#### Injecting view model
+#### Injecting view-model
 
 ```kotlin
 @Composable
@@ -258,10 +258,10 @@ fun ChoiceScreen(
 )
 ```
 ⚠ Generally you should type the `viewModel` parameter to the `MviViewModel<...>` interface. 
-Otherwise providing preview may be very hard especially if your view model has many dependencies (e.g. tons of use cases).
+Otherwise providing preview may be very hard especially if your view-model has many dependencies (e.g. tons of use cases).
 
 
-If you really don't intend to use preview you may simplify the view model injection (still not recommended as makes testing harder):
+If you really don't intend to use preview you may simplify the view-model injection (still not recommended as makes testing harder):
 ```kotlin
 @Composable
 fun ChoiceScreen(
@@ -269,7 +269,7 @@ fun ChoiceScreen(
 )
 ```
 
-You may provide parameters to view models during injection:
+You may provide parameters to view-models during injection:
 ```kotlin
 class DetailsViewModelFactory(private val id: String) : ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel> create(modelClass: Class<T>): T = DetailsViewModel(id) as T
@@ -284,26 +284,26 @@ fun DetailsScreen(
 }
 ```
 
-#### Injecting view model with Koin
+#### Injecting view-model with Koin
 
-First you need to declare view models in `module`.
+First you need to declare view-models in Koin `module`.
 ```kotlin
 val appUiModule = module {
     viewModelOf(::ChoiceViewModel)
-    viewModel { parameters -> DetailsViewModel(parameters.get()) } // view model with parameter
+    viewModel { parameters -> DetailsViewModel(parameters.get()) } // view-model with parameter
 }
 ```
 
 The injection is straightforward.
 ```kotlin
-// view model without parameters (beside SavedStateHandle)
+// view-model without parameters (beside SavedStateHandle)
 @Composable
 fun ChoiceScreen(
     viewModel: MviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect> = koinViewModel<ChoiceViewModel>(),
     onNavigateToDetails: (String) -> Unit
 )
 
-// view models with parameters
+// view-model with parameter
 @Composable
 fun DetailsScreen(
     id: String,
@@ -311,8 +311,79 @@ fun DetailsScreen(
 )
 ```
 
+#### Handling navigation effects
+
+Use `NavigationEffect` composable method to handle navigation effects. 
+```kotlin
+@Composable
+fun ChoiceScreen(
+    viewModel: MviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect> = koinViewModel<ChoiceViewModel>(),
+    onNavigateToDetails: (String) -> Unit
+) {
+    NavigationEffect(viewModel) { effect ->
+        when (effect) {
+            is NavigateToDetails -> {
+                onNavigateToDetails(effect.id)
+            }
+        }
+    }
+    ...
+}
+```
+ℹ Each navigation effect is provided only once. It won't be repeated even if the view is recreated.
+
+By default the `NavigationEffect` handles the navigation effects only if the view is at least in the `Lifecycle.State.STARTED` state.
+If the application is in background or user has navigated to any other screen the navigation effects are ignored.
+When user returns only the last navigation effect fired in the meantime by the view-model is handled.
+
+You may change this behavior by defining the required minimum view state, e.g. if you pass the `Lifecycle.State.RESUMED`
+all the view navigation will be ignored if the view is visible but paused.
+```kotlin
+NavigationEffect(
+    viewModel = viewModel,
+    minActiveState = Lifecycle.State.RESUMED
+) { effect ->
+
+}
+```
+⚠ In Compose it is impossible to handle navigation effects when the view is not started even if you pass `Lifecycle.State.CREATED` as minimum view state.
+All the recompositions are suspended when the view is in stopped.
+
+#### Handling view effects
+
+Use `ViewEffect` composable method to handle view effects.
+```kotlin
+@Composable
+fun ChoiceScreen(
+    viewModel: MviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect> = koinViewModel<ChoiceViewModel>(),
+    onNavigateToDetails: (String) -> Unit
+) {
+    ViewEffect(viewModel) { effect ->
+        when (effect) {
+            is ShowToast -> Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+    ...
+}
+```
+ℹ Each view effect is provided only once. It won't be repeated even if the view is recreated.
+
+By default the `ViewEffect` handles the view effects only if the view is at least in the `Lifecycle.State.STARTED` state.
+If the application is in background or user has navigated to any other screen the view effects are ignored.
+When user returns only the last view effect fired in the meantime by the view-model is handled.
+
+You may change this behavior by defining the required minimum view state, e.g. if you pass the `Lifecycle.State.RESUMED`
+all the view effects will be ignored if the view is visible but paused.
+```kotlin
+ViewEffect(
+    viewModel = viewModel,
+    minActiveState = Lifecycle.State.RESUMED
+) { effect ->
+
+}
+```
+⚠ In Compose it is impossible to handle view effects when the view is not started even if you pass `Lifecycle.State.CREATED` as minimum view state.
+All the recompositions are suspended when the view is in stopped.
 
 
-
-
-### Use view model (View) - TBD
+### Use view-model (View) - TBD
