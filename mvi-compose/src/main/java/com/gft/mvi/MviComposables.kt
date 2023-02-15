@@ -37,9 +37,10 @@ fun <VE : ViewEffect> ViewEffect(
 @Composable
 inline fun <reified VS : ViewState> ViewState(
     viewModel: MviViewModel<VS, *, *, *>,
+    minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
     crossinline consumer: @Composable ViewStateProvider<VS>.() -> Unit
 ) {
-    val state = viewModel.viewStates.collectAsStateWithLifecycle()
+    val state = viewModel.viewStates.collectAsStateWithLifecycle(minActiveState = minActiveState)
     ViewStateProvider(state).consumer()
 }
 
@@ -53,8 +54,9 @@ class ViewStateProvider<VS : ViewState>(private val state: State<VS>) {
 @Composable
 fun <VS : ViewState> viewState(
     viewModel: MviViewModel<VS, *, *, *>,
+    minActiveState: Lifecycle.State = Lifecycle.State.STARTED
 ): ReadOnlyProperty<Any?, VS> {
-    val state = viewModel.viewStates.collectAsStateWithLifecycle()
+    val state = viewModel.viewStates.collectAsStateWithLifecycle(minActiveState = minActiveState)
     return ViewStateDelegate(state)
 }
 

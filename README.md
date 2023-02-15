@@ -354,6 +354,29 @@ fun ChoiceScreen(
 >ℹ Although the `viewState` variable is typed to `<VS : ViewState>` it is a delegate pointing to a `<State<VS : ViewState>>` under the hood.
 Thanks to this the whole view is not recomposed when the `viewState` changes - only the parts reading from `viewState` are recomposed.
 
+#### View state subscription lifetime
+
+By default both the `ViewState` and `by viewState(viewModel)` subscribes to the `viewModel.viewStates` flow when view enters `Lifecycle.State.STARTED`
+state and cancels the subscription when view is stopped.
+
+In some rare scenarios you may want to keep the subscription alive even if the view is not visible (not in `Lifecycle.State.STARTED` state),
+especially if the `viewModel.viewStates` is backed by a cold flow that should keep working even if app is in background.
+You may specify the minimum lifecycle state at which the subscription is active using `minActiveState` param:
+
+```kotlin
+ViewState(
+    viewModel = viewModel,
+    minActiveState = Lifecycle.State.CREATED
+) { effect ->
+
+}
+```
+```kotlin
+val viewState by viewState(viewModel = viewModel, minActiveState = Lifecycle.State.CREATED)
+```
+> ℹ Although using `Lifecycle.State.CREATED` as `minActiveState` keeps the subscription active the Compose suspends recomposition when view is stopped.
+> Thanks to this the app is not wasting resources on invisible updates while the view model may keep its work.
+
 #### Handling navigation effects
 
 Use `NavigationEffect` composable method to handle navigation effects. 
