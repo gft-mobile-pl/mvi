@@ -184,7 +184,7 @@ but rather fetch it from domain.
 ```kotlin
 class ChoiceViewModel(streamData: StreamUserChoiceDataUseCase) : MviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect>, ViewModel() {
     
-    override val viewStates: StateFlow<ChoiceViewState> = fetchData()
+    override val viewStates: StateFlow<ChoiceViewState> = streamData()
         .map { data -> ChoiceViewState(data) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ChoiceViewState(0))
     
