@@ -1,4 +1,4 @@
-package com.gft.example.mvi.ui.details
+package com.gft.example.mvi.xml.ui.details
 
 import com.gft.mvi.BaseMviViewModel
 import com.gft.mvi.NavigationEffect

@@ -11,8 +11,10 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/example-compose" />
+            <option value="$PROJECT_DIR$/example-xml" />
             <option value="$PROJECT_DIR$/mvi-compose" />
             <option value="$PROJECT_DIR$/mvi-core" />
+            <option value="$PROJECT_DIR$/mvi-fragment-ktx" />
           </set>
         </option>
       </GradleProjectSettings>

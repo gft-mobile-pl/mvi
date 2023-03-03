@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace 'com.gft.mvi.core'
+    namespace 'com.gft.mvi.fragment_ktx'
     compileSdk compile_sdk
 
     defaultConfig {
@@ -31,9 +31,8 @@ android {
 }
 
 dependencies {
+    api project(':mvi-core')
 
-    implementation "androidx.core:core-ktx:$core_ktx_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
+    implementation "androidx.fragment:fragment-ktx:$fragment_ktx"
 }

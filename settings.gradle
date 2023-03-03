@@ -16,3 +16,5 @@ rootProject.name = "MVI"
 include ':example-compose'
 include ':mvi-core'
 include ':mvi-compose'
+include ':example-xml'
+include ':mvi-fragment-ktx'

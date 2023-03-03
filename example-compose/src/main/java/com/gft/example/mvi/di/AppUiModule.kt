@@ -8,5 +8,5 @@ import org.koin.dsl.module
 
 val appUiModule = module {
     viewModelOf(::ChoiceViewModel)
-    viewModel { parameters -> DetailsViewModel(parameters.get()) }
+    viewModel { (id: String) -> DetailsViewModel(id) }
 }
