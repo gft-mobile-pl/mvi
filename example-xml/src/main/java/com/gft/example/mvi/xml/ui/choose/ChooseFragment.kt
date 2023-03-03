@@ -9,6 +9,7 @@ import com.gft.example.mvi.xml.R
 import com.gft.example.mvi.xml.databinding.FragmentChooseBinding
 import com.gft.mvi.fragment.handleNavigationEffect
 import com.gft.mvi.fragment.handleViewEffect
+import com.gft.mvi.fragment.observeViewModel
 import com.gft.mvi.fragment.observeViewState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -21,35 +22,33 @@ class ChooseFragment : Fragment(R.layout.fragment_choose) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentChooseBinding.bind(view)
 
-        observeViewState()
         initLayout()
-        observeViewEffect()
-        observeNavigation()
+
+        observeViewState(viewModel, ::onViewState)
+        handleNavigationEffect(viewModel, ::onNavigationEffect)
+        handleViewEffect(viewModel, ::onViewEffect)
+
+        // or
+        // observeViewModel(viewModel, ::onViewState, ::onNavigationEffect, ::onViewEffect)
+        // observeViewModel(viewModel, ::onViewState, ::onNavigationEffect)
     }
 
-    private fun observeViewState() {
-        observeViewState(viewModel) {
-            binding.numberTv.text = it.randomNumber.toString()
+    private fun onViewState(viewState: ChoiceViewState) {
+        binding.numberTv.text = viewState.randomNumber.toString()
+    }
+
+    private fun onNavigationEffect(effect: ChoiceNavigationEffect) {
+        when (effect) {
+            is ChoiceNavigationEffect.NavigateToDetails -> {
+                val action = ChooseFragmentDirections.toDetailsFragment(effect.id)
+                findNavController().navigate(action)
+            }
         }
     }
 
-    private fun observeNavigation() {
-        handleNavigationEffect(viewModel) { effect ->
-            when (effect) {
-                is ChoiceNavigationEffect.NavigateToDetails -> {
-                    val action = ChooseFragmentDirections.toDetailsFragment(effect.id)
-                    findNavController().navigate(action)
-                }
-            }
-
-        }
-    }
-
-    private fun observeViewEffect() {
-        handleViewEffect(viewModel) { effect ->
-            when (effect) {
-                is ChoiceViewEffect.ShowToast -> Toast.makeText(binding.root.context, effect.message, Toast.LENGTH_LONG).show()
-            }
+    private fun onViewEffect(effect: ChoiceViewEffect) {
+        when (effect) {
+            is ChoiceViewEffect.ShowToast -> Toast.makeText(binding.root.context, effect.message, Toast.LENGTH_LONG).show()
         }
     }
 
