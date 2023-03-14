@@ -3,6 +3,7 @@
 [[_TOC_]]
 
 ## TL;DR
+1. Define contract:
 ```kotlin
 @Parcelize
 data class ChoiceViewState(
@@ -23,6 +24,7 @@ sealed interface ChoiceViewEffect : ViewEffect {
     data class ShowToast(val message: String) : ChoiceViewEffect
 }
 ```
+2. Implement view-model:
 ```kotlin
 class ChoiceViewModel(
     savedStateHandle: SavedStateHandle,
@@ -47,6 +49,7 @@ class ChoiceViewModel(
     }
 }
 ```
+3. Bind view to view-model
 ```kotlin
 @Composable
 fun ChoiceScreen(
@@ -88,6 +91,7 @@ fun ChoiceScreen(
     )
 }
 ```
+4. Provide `@Preview`
 ```kotlin
 @Preview(showSystemUi = true, heightDp = 800)
 @Composable
@@ -132,8 +136,20 @@ sealed interface ChoiceViewEffect : ViewEffect {
 
 > ℹ `ViewState`, `ViewEvent`, `NavigationEffect`, `ViewEffect` are just marker interfaces. 
 > Theoretically we would be just fine without them but:
-> - they open possibility to create extensions methods which are scoped to the particular MVI contract parts,
-> - they prevent various common mistakes like when the generic parameters are specified in a wrong order while defining view-model.
+> - They open possibility to create extensions methods which are scoped to the particular parts of MVI contract:
+>   - Absolutely life-saver when dealing with `@Preview`
+>     ```kotlin
+>     @Preview(showSystemUi = true, heightDp = 800)
+>     @Composable
+>     fun ChoiceScreenPreview() {
+>       ChoiceScreen(
+>         viewModel = ChoiceViewState(randomNumber = 16).toViewModel(), // uses TestMviViewModel under the hood
+>         onNavigateToDetails = {}
+>       )
+>     }
+>     ```
+>   - Very useful when creating instrumented tests when view-model is required by Fragment/Composable.
+> - They prevent various common mistakes like when the generic parameters are specified in a wrong order while defining view-model.
 
 
 ### Define view-model
