@@ -15,9 +15,19 @@ interface MviViewModel<VS : ViewState, EV : ViewEvent, NE : NavigationEffect, VE
         else throw TypeCastException("MviViewModel.dispatchNavigationEffect extension supports MutableState only!")
     }
 
+    fun MviViewModel<VS, EV, NE, VE>.clearNavigationEffect() {
+        if (navigationEffects is MutableStateFlow) (navigationEffects as MutableStateFlow).value = null
+        else throw TypeCastException("MviViewModel.clearNavigationEffect extension supports MutableState only!")
+    }
+
     fun MviViewModel<VS, EV, NE, VE>.dispatchViewEffect(effect: VE) {
         if (viewEffects is MutableStateFlow) (viewEffects as MutableStateFlow).value = ConsumableEvent(effect)
         else throw TypeCastException("MviViewModel.dispatchViewEffect extension supports MutableState only!")
+    }
+
+    fun MviViewModel<VS, EV, NE, VE>.clearViewEffect(effect: VE) {
+        if (viewEffects is MutableStateFlow) (viewEffects as MutableStateFlow).value = null
+        else throw TypeCastException("MviViewModel.clearViewEffect extension supports MutableState only!")
     }
 
     var MviViewModel<VS, EV, NE, VE>.viewState: VS

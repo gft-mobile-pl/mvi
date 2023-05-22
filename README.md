@@ -214,12 +214,14 @@ Special caution is required while defining and assigning fields at the same time
 ```kotlin
 override val viewEffects: StateFlow<ConsumableEvent<ChoiceViewEffect>?> = MutableStateFlow<ConsumableEvent<ChoiceViewEffect>?>(null)
 ```
-> ⚠ You should explicitly type all MVI fields to `StateFlow<...>` - otherwise you will expose the assigned object (usually `MutableStateFlow`). As a rule of thumb you should use backing fields to avoid this inconvenience:
+⚠ You should explicitly type all MVI fields to `StateFlow<...>` - otherwise you will expose the assigned object (usually `MutableStateFlow`). 
+Alternatively you may use backing fields to avoid this issue:
 ```kotlin
 private val _viewEffects = MutableStateFlow<ConsumableEvent<ChoiceViewEffect>?>(null)
 override val viewEffects: StateFlow<ConsumableEvent<ChoiceViewEffect>?> = _viewEffect
 ```
-Don't worry - you will be still able to mutate the view state even if you choose the first option (defining and assigning at the same time) - read on..
+Note: you will be still able to mutate the view state even if you choose the first option (defining and assigning at the same time) - the `dispatchViewEffect`, `dispatchNavigationEffect` and `val viewState` 
+extension methods check the real type of the `flow` and perform necessary casting if required. 
 
 #### Updating view state
 If you extend `BaseMviViewModel` OR your custom view-model assigns `MutableStateFlow` to `val viewStates: StateFlow<VS>` you may use `viewState` extension method to update the view state:
@@ -262,6 +264,8 @@ class ChoiceViewModel ... {
     ...
 }
 ```
+
+## 
 
 ### Use view-model (Compose)
 
