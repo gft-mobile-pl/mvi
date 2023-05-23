@@ -168,29 +168,31 @@ class ChoiceViewModel(
 
     }
 }
-```
 
-`BaseMviViewModel` accepts two parameters:
-- `initialViewState` - in the MVI (and Compose) the initial state of the view is always required.<br />
-ℹ initial data may not be a "correct" if you plan to provide the real data synchronously 
-in the `init` block (e.g. using `launch(start = CoroutineStart.UNDISPATCHED) {}`) 
-- `savedStateHandle` (optional) - if you pass `SavedStateHandle` to the `BaseMviViewModel` it will automatically save/restore the view state when activity is killed/recreated.
+// or
 
-It is also possible to inherit from `BaseMviViewModel` and override particular fields:
-```kotlin
-class ChoiceViewModel(streamData: StreamUserChoiceDataUseCase) : BaseMviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect>(ChoiceViewState(0)) {
+class ChoiceViewModel : BaseMviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect>() {
 
     override val viewStates = streamData()
         .map { data -> ChoiceViewState(data) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ChoiceViewState(0))
+        .toViewStates(ChoiceViewState(0), viewModelScope)
+    
+    override fun onEvent(event: ChoiceViewEvent) {
 
-    override fun onEvent(event: ChoiceViewEvent) {}
+    }
 }
 ```
-This approach saves a bit of time as the rest of the fields are provided by the `BaseMviViewModel` however:
-- you still need to pass `initialState` to the constructor even though it won't be used,
-- if you override `viewStates` field the automatic save/restore mechanism won't work anymore even if you pass `SavedStateHandle` to the base class constructor.
-
+The are two constructors available:
+- With two parameters:
+  - `initialViewState` - in the MVI (and Compose) the initial state of the view is always required.<br />
+ℹ initial data may not be a "correct" if you plan to provide the real data synchronously 
+in the `init` block (e.g. using `launch(start = CoroutineStart.UNDISPATCHED) {}`) 
+  - `savedStateHandle` (optional) - if you pass `SavedStateHandle` to the `BaseMviViewModel` it will automatically save/restore the view state when activity is killed/recreated.
+- With no parameters:
+  - If you use this constructor you must override `val viewStates: StateFlow` property.
+  If you don't do this an exception will be thrown on runtime when the `viewStates` is accessed for the first time.
+  - if you choose this constructor you can't benefit from the automatic save/restore mechanism anymore,
+  but if your view state is mapped from an external stream it probably means that you do not need this feature in the first place.
 
 #### Using `MviViewModel` interface
 
@@ -202,13 +204,17 @@ class ChoiceViewModel(streamData: StreamUserChoiceDataUseCase) : MviViewModel<Ch
     
     override val viewStates: StateFlow<ChoiceViewState> = streamData()
         .map { data -> ChoiceViewState(data) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), ChoiceViewState(0))
+        .toViewStates(ChoiceViewState(0), viewModelScope)
     
     override val viewEffects: StateFlow<ConsumableEvent<ChoiceViewEffect>?> = MutableStateFlow<ConsumableEvent<ChoiceViewEffect>?>(null)
     override val navigationEffects: StateFlow<ConsumableEvent<ChoiceNavigationEffect>?> = MutableStateFlow<ConsumableEvent<ChoiceNavigationEffect>?>(null)
     override fun onEvent(event: ChoiceViewEvent) { }
 }
 ```
+> 💡 There are 3 extension methods provided that can convert external flows to corresponding `StateFlow-s` of the `MviViewModel` interface: 
+> - `toViewStates(initialState: T, scope: CoroutineScope)`, 
+> - `toViewEffects(scope: CoroutineScope)`, 
+> - `toNavigationEffects(scope: CoroutineScope)`. 
 
 Special caution is required while defining and assigning fields at the same time, e.g.
 ```kotlin
