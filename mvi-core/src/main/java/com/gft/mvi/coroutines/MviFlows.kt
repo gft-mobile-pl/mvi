@@ -29,7 +29,7 @@ fun <T : ViewState> Flow<T>.toViewStates(initialState: T, scope: CoroutineScope)
     )
 }
 
-fun <T : ViewEffect?> Flow<T>.toViewEffects(scope: CoroutineScope): StateFlow<ConsumableEvent<T>?> = MutableStateFlowWithSource(
+fun <T : ViewEffect> Flow<T?>.toViewEffects(scope: CoroutineScope): StateFlow<ConsumableEvent<T>?> = MutableStateFlowWithSource(
     initialValue = null,
     source = map { item ->
         item?.let { ConsumableEvent(item) }
@@ -37,7 +37,7 @@ fun <T : ViewEffect?> Flow<T>.toViewEffects(scope: CoroutineScope): StateFlow<Co
     scope = scope
 )
 
-fun <T : NavigationEffect?> Flow<T>.toNavigationEffects(scope: CoroutineScope): StateFlow<ConsumableEvent<T>?> = MutableStateFlowWithSource(
+fun <T : NavigationEffect> Flow<T?>.toNavigationEffects(scope: CoroutineScope): StateFlow<ConsumableEvent<T>?> = MutableStateFlowWithSource(
     initialValue = null,
     source = map { item ->
         item?.let { ConsumableEvent(item) }

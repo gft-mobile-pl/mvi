@@ -271,8 +271,6 @@ class ChoiceViewModel ... {
 }
 ```
 
-## 
-
 ### Use view-model (Compose)
 
 #### Injecting view-model
