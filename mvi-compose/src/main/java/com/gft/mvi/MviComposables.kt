@@ -5,6 +5,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gft.data.ConsumableEvent
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -15,10 +16,7 @@ fun <NE : NavigationEffect> NavigationEffect(
     consumer: (NE) -> Unit
 ) {
     val state = viewModel.navigationEffects.collectAsStateWithLifecycle(minActiveState = minActiveState)
-    val consumableEvent = state.value
-    SideEffect {
-        consumableEvent?.consume(consumer)
-    }
+    ConsumeEvent(state, consumer)
 }
 
 @Composable
@@ -28,6 +26,11 @@ fun <VE : ViewEffect> ViewEffect(
     consumer: (VE) -> Unit
 ) {
     val state = viewModel.viewEffects.collectAsStateWithLifecycle(minActiveState = minActiveState)
+    ConsumeEvent(state, consumer)
+}
+
+@Composable
+private fun <T> ConsumeEvent(state: State<ConsumableEvent<T>?>, consumer: (T) -> Unit, ) {
     val consumableEvent = state.value
     SideEffect {
         consumableEvent?.consume(consumer)
