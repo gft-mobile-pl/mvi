@@ -65,7 +65,7 @@ fun ChoiceScreen(
                 ) {
                     Button(
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = { viewModel.onEvent(OnShowToastClicked) }
+                        onClick = { dispatchViewEvent(OnShowToastClicked) }
                     ) {
                         Text(text = "Show toast")
                     }
@@ -82,13 +82,13 @@ fun ChoiceScreen(
                 ) {
                     Button(
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = { viewModel.onEvent(OnShowDetailsClicked("1")) }
+                        onClick = { dispatchViewEvent(OnShowDetailsClicked("1")) }
                     ) {
                         Text(text = "Show details #1")
                     }
                     Button(
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = { viewModel.onEvent(OnShowDetailsClicked("2")) }
+                        onClick = { dispatchViewEvent(OnShowDetailsClicked("2")) }
                     ) {
                         Text(text = "Show details #2")
                     }
@@ -106,7 +106,7 @@ fun ChoiceScreen(
                 ) {
                     Button(
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = { viewModel.onEvent(OnDrawNumberClicked) }
+                        onClick = { dispatchViewEvent(OnDrawNumberClicked) }
                     ) {
                         Text(text = "Draw a number")
                     }

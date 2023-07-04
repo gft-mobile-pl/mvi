@@ -378,6 +378,32 @@ fun ChoiceScreen(
 >ℹ Although the `viewState` variable is typed to `<VS : ViewState>` it is a delegate pointing to a `<State<VS : ViewState>>` under the hood.
 Thanks to this the whole view is not recomposed when the `viewState` changes - only the parts reading from `viewState` are recomposed.
 
+#### Dispatching view events
+
+Within the scope of `ViewState` composable you should always use the `dispatchViewEvent` method, which protects against sending events from the 
+view to the ViewModel when the view is not in the required state. By default, the minimum view state required for propagating view events 
+is set to `Lifecycle.State.RESUMED`. View events are ignored if the view is visible but paused.
+
+To modify this behaviour, you can specify mininum view state for view events propagation. For example, if you pass Lifecycle.State.STARTED 
+as minActiveStateForViewEventsPropagation, view events will be disregarded as long as the screen is not visible.
+
+```kotlin
+@Composable
+fun ChoiceScreen(
+    viewModel: MviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect> = koinViewModel<ChoiceViewModel>(),
+    onNavigateToDetails: (String) -> Unit
+) {
+    ...
+    Button(
+      modifier = Modifier.fillMaxWidth(),
+      onClick = { dispatchViewEvent(OnShowToastClicked) }
+    ) {
+      Text(text = "Show toast")
+    }
+    ...
+}
+```
+
 #### View state subscription lifetime
 
 By default both the `ViewState` and `by viewState(viewModel)` subscribes to the `viewModel.viewStates` flow when view enters `Lifecycle.State.STARTED`
@@ -422,16 +448,19 @@ fun ChoiceScreen(
 ```
 > ℹ Each navigation effect is provided only once. It won't be repeated even if the view is recreated.
 
-By default the `NavigationEffect` handles the navigation effects only if the view is at least in the `Lifecycle.State.STARTED` state.
-If the application is in background or user has navigated to any other screen the navigation effects are ignored.
-When user returns only the last navigation effect fired in the meantime by the view-model is handled.
+By default the `NavigationEffect` handles the navigation effects only if the view is at least in the `Lifecycle.State.RESUMED` state.
+Navigation effects are ignored if the view is visible but paused. The last navigation effect dispatched by the view model is handled 
+once the view is resumed.
 
-You may change this behavior by defining the required minimum view state, e.g. if you pass the `Lifecycle.State.RESUMED`
-all the view navigation will be ignored if the view is visible but paused.
+
+To modify this behaviour, you can specify the minimum required view state. For example, if you pass Lifecycle.State.STARTED, all 
+navigation effects will be ignored while the current screen is not visible. When the user returns, only the last navigation effect 
+triggered by the view-model during that time will be processed.
+
 ```kotlin
 NavigationEffect(
     viewModel = viewModel,
-    minActiveState = Lifecycle.State.RESUMED
+    minActiveState = Lifecycle.State.STARTED
 ) { effect ->
 
 }
@@ -458,16 +487,17 @@ fun ChoiceScreen(
 ```
 > ℹ Each view effect is provided only once. It won't be repeated even if the view is recreated.
 
-By default the `ViewEffect` handles the view effects only if the view is at least in the `Lifecycle.State.STARTED` state.
-If the application is in background or user has navigated to any other screen the view effects are ignored.
-When user returns only the last view effect fired in the meantime by the view-model is handled.
+By default the `ViewEffect` handles the view effects only if the view is in the `Lifecycle.State.RESUMED` state.
+View effects are ignored if the view is visible but paused. The last view effect dispatched by the view model is handled
+once the view is resumed.
 
-You may change this behavior by defining the required minimum view state, e.g. if you pass the `Lifecycle.State.RESUMED`
-all the view effects will be ignored if the view is visible but paused.
+To modify this behaviour, you can specify the minimum required view state. For example, if you pass Lifecycle.State.STARTED,
+all view effects will be ignored while the current screen is not visible. When the user returns, only the last view effect 
+triggered by the view-model during that time will be processed.
 ```kotlin
 ViewEffect(
     viewModel = viewModel,
-    minActiveState = Lifecycle.State.RESUMED
+    minActiveState = Lifecycle.State.STARTED
 ) { effect ->
 
 }
