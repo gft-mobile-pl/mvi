@@ -32,7 +32,7 @@ fun <VE : ViewEffect> ViewEffect(
 }
 
 @Composable
-private fun <T> ConsumeEvent(state: State<ConsumableEvent<T>?>, consumer: (T) -> Unit, ) {
+private fun <T> ConsumeEvent(state: State<ConsumableEvent<T>?>, consumer: (T) -> Unit) {
     val consumableEvent = state.value
     SideEffect {
         consumableEvent?.consume(consumer)
@@ -40,12 +40,12 @@ private fun <T> ConsumeEvent(state: State<ConsumableEvent<T>?>, consumer: (T) ->
 }
 
 @Composable
-inline fun <reified VS : ViewState, EV : ViewEvent> ViewState(
+fun <VS : ViewState, EV : ViewEvent> ViewState(
     viewModel: MviViewModel<VS, EV, *, *>,
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
     minActiveStateForViewEventsPropagation: Lifecycle.State = Lifecycle.State.RESUMED,
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-    crossinline consumer: @Composable ViewStateProvider<VS, EV>.() -> Unit
+    consumer: @Composable ViewStateProvider<VS, EV>.() -> Unit
 ) {
     val state = viewModel.viewStates.collectAsStateWithLifecycle(minActiveState = minActiveState)
     ViewStateProvider<VS, EV>(state) { event ->
