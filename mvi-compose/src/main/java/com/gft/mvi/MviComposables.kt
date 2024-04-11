@@ -17,7 +17,10 @@ fun <NE : NavigationEffect> NavigationEffect(
     minActiveState: Lifecycle.State = Lifecycle.State.RESUMED,
     consumer: (NE) -> Unit
 ) {
-    val state = viewModel.navigationEffects.collectAsStateWithLifecycle(minActiveState = minActiveState)
+    val state = viewModel.navigationEffects.collectAsStateWithLifecycle(
+        initialValue = null,
+        minActiveState = minActiveState
+    )
     ConsumeEvent(state, consumer)
 }
 
@@ -27,7 +30,10 @@ fun <VE : ViewEffect> ViewEffect(
     minActiveState: Lifecycle.State = Lifecycle.State.RESUMED,
     consumer: (VE) -> Unit
 ) {
-    val state = viewModel.viewEffects.collectAsStateWithLifecycle(minActiveState = minActiveState)
+    val state = viewModel.viewEffects.collectAsStateWithLifecycle(
+        initialValue = null,
+        minActiveState = minActiveState
+    )
     ConsumeEvent(state, consumer)
 }
 
