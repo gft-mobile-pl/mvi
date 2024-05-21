@@ -14,8 +14,9 @@ data class ChoiceViewState(
 
 sealed interface ChoiceViewEvent : ViewEvent {
     data class OnShowDetailsClicked(val id: String) : ChoiceViewEvent
-    object OnDrawNumberClicked : ChoiceViewEvent
-    object OnShowToastClicked : ChoiceViewEvent
+    data object OnDrawNumberClicked : ChoiceViewEvent
+    data object OnShowToastClicked : ChoiceViewEvent
+    data object OnNavigateToCounterClicked : ChoiceViewEvent
 }
 
 sealed interface ChoiceViewEffect : ViewEffect {
@@ -24,4 +25,5 @@ sealed interface ChoiceViewEffect : ViewEffect {
 
 sealed interface ChoiceNavigationEffect : NavigationEffect {
     data class NavigateToDetails(val id: String) : ChoiceNavigationEffect
+    data object NavigateToCounter : ChoiceNavigationEffect
 }

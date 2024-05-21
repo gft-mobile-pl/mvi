@@ -18,9 +18,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.gft.example.mvi.ui.screens.ChoiceNavigationEffect.NavigateToCounter
 import com.gft.example.mvi.ui.screens.ChoiceNavigationEffect.NavigateToDetails
 import com.gft.example.mvi.ui.screens.ChoiceViewEffect.ShowToast
 import com.gft.example.mvi.ui.screens.ChoiceViewEvent.OnDrawNumberClicked
+import com.gft.example.mvi.ui.screens.ChoiceViewEvent.OnNavigateToCounterClicked
 import com.gft.example.mvi.ui.screens.ChoiceViewEvent.OnShowDetailsClicked
 import com.gft.example.mvi.ui.screens.ChoiceViewEvent.OnShowToastClicked
 import com.gft.mvi.MviViewModel
@@ -33,7 +35,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun ChoiceScreen(
     viewModel: MviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect> = koinViewModel<ChoiceViewModel>(),
-    onNavigateToDetails: (String) -> Unit
+    onNavigateToDetails: (String) -> Unit,
+    onNavigateToCounter: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -41,6 +44,10 @@ fun ChoiceScreen(
         when (effect) {
             is NavigateToDetails -> {
                 onNavigateToDetails(effect.id)
+            }
+
+            NavigateToCounter -> {
+                onNavigateToCounter()
             }
         }
     }
@@ -93,6 +100,21 @@ fun ChoiceScreen(
                         Text(text = "Show details #2")
                     }
                 }
+            }
+
+            Card(
+                modifier = Modifier.width(180.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp)
+                ) {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { dispatchViewEvent(OnNavigateToCounterClicked) }
+                    ) {
+                        Text(text = "Go to counter")
+                    }
+                }
 
             }
 
@@ -128,6 +150,7 @@ fun ChoiceScreen(
 fun ChoiceScreenPreview() {
     ChoiceScreen(
         viewModel = ChoiceViewState(randomNumber = 16).toViewModel(),
-        onNavigateToDetails = {}
+        onNavigateToDetails = {},
+        onNavigateToCounter = {}
     )
 }

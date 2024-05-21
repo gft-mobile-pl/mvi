@@ -1,8 +1,10 @@
 package com.gft.example.mvi.ui.screens
 
 import androidx.lifecycle.SavedStateHandle
+import com.gft.example.mvi.ui.screens.ChoiceNavigationEffect.NavigateToCounter
 import com.gft.example.mvi.ui.screens.ChoiceNavigationEffect.NavigateToDetails
 import com.gft.example.mvi.ui.screens.ChoiceViewEvent.OnDrawNumberClicked
+import com.gft.example.mvi.ui.screens.ChoiceViewEvent.OnNavigateToCounterClicked
 import com.gft.example.mvi.ui.screens.ChoiceViewEvent.OnShowDetailsClicked
 import com.gft.example.mvi.ui.screens.ChoiceViewEvent.OnShowToastClicked
 import com.gft.mvi.BaseMviViewModel
@@ -26,6 +28,10 @@ class ChoiceViewModel(
             }
             OnShowToastClicked -> {
                 dispatchViewEffect(ChoiceViewEffect.ShowToast("Toast message!"))
+            }
+
+            OnNavigateToCounterClicked -> {
+                dispatchNavigationEffect(NavigateToCounter)
             }
         }
     }

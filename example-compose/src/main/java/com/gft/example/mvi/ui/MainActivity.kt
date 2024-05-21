@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.gft.example.mvi.ui.counter.CounterScreen
 import com.gft.example.mvi.ui.details.DetailsScreen
 import com.gft.example.mvi.ui.screens.ChoiceScreen
 
@@ -33,6 +34,9 @@ class MainActivity : ComponentActivity() {
                         ChoiceScreen(
                             onNavigateToDetails = { id ->
                                 navController.navigate("details/$id")
+                            },
+                            onNavigateToCounter = {
+                                navController.navigate("counter")
                             }
                         )
                     }
@@ -41,6 +45,16 @@ class MainActivity : ComponentActivity() {
                         route = "details/{id}"
                     ) { backStackEntry ->
                         DetailsScreen(id = backStackEntry.arguments?.getString("id") ?: "WTF?")
+                    }
+
+                    composable(
+                        route = "counter"
+                    ) {
+                        CounterScreen(
+                            onNavigateBack = {
+                                navController.popBackStack()
+                            }
+                        )
                     }
                 }
             }
