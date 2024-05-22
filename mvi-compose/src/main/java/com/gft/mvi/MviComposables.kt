@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gft.compose.toState
 import com.gft.data.ConsumableEvent
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
@@ -53,7 +54,7 @@ fun <VS : ViewState, EV : ViewEvent> ViewState(
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     consumer: @Composable ViewStateProvider<VS, EV>.() -> Unit
 ) {
-    val state = viewModel.viewStates.collectAsStateWithLifecycle(minActiveState = minActiveState)
+    val state = viewModel.viewStates.toState(minActiveState = minActiveState)
     ViewStateProvider<VS, EV>(state) { event ->
         if (lifecycleOwner.lifecycle.currentState.isAtLeast(minActiveStateForViewEventsPropagation)) {
             viewModel.onEvent(event)
@@ -78,7 +79,7 @@ fun <VS : ViewState> viewState(
     viewModel: MviViewModel<VS, *, *, *>,
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED
 ): ReadOnlyProperty<Any?, VS> {
-    val state = viewModel.viewStates.collectAsStateWithLifecycle(minActiveState = minActiveState)
+    val state = viewModel.viewStates.toState(minActiveState = minActiveState)
     return ViewStateDelegate(state)
 }
 
