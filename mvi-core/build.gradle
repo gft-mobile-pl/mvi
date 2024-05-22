@@ -31,6 +31,7 @@ android {
 }
 
 dependencies {
+    implementation project(':libs:coroutines-gftx')
 
     implementation "androidx.core:core-ktx:$core_ktx_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
