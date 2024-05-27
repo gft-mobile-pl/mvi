@@ -1,9 +1,11 @@
 package com.gft.mvi
 
+import androidx.compose.runtime.Stable
 import com.gft.data.ConsumableEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+@Stable
 interface MviViewModel<VS : ViewState, EV : ViewEvent, NE : NavigationEffect, VE : ViewEffect> {
     val viewStates: StateFlow<VS>
     val viewEffects: StateFlow<ConsumableEvent<VE>?>

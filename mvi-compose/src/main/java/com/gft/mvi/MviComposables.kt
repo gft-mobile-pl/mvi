@@ -2,6 +2,7 @@ package com.gft.mvi
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
@@ -62,6 +63,7 @@ fun <VS : ViewState, EV : ViewEvent> ViewState(
     }.consumer()
 }
 
+@Stable
 class ViewStateProvider<VS : ViewState, EV : ViewEvent>(
     private val state: State<VS>,
     private val onEvent: (EV) -> Unit
