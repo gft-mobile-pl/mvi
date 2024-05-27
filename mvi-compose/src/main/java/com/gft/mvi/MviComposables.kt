@@ -65,10 +65,10 @@ fun <VS : ViewState, EV : ViewEvent> ViewState(
 
 @Stable
 class ViewStateProvider<VS : ViewState, EV : ViewEvent>(
-    private val state: State<VS>,
-    private val onEvent: (EV) -> Unit
+    @PublishedApi internal val state: State<VS>,
+    private val onEvent: (EV) -> Unit,
 ) {
-    val viewState: VS
+    inline val viewState: VS
         get() {
             return state.value
         }
