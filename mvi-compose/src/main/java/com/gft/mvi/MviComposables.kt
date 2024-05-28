@@ -8,7 +8,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.gft.compose.toState
+import com.gft.compose.data.toState
 import com.gft.data.ConsumableEvent
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
