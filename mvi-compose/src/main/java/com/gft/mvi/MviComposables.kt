@@ -73,6 +73,10 @@ class ViewStateProvider<VS : ViewState, EV : ViewEvent>(
             return state.value
         }
 
+    @Deprecated(
+        message = "Use `viewModel.onEvent(event)` instead. You should also use com.gft.compose.interaction.InteractionFilter(minActiveState: Lifecycle.State, content: @Composable () -> Unit)` to filter user input.",
+        replaceWith = ReplaceWith("viewModel.onEvent(event)")
+    )
     fun dispatchViewEvent(event: EV) = onEvent(event)
 }
 
