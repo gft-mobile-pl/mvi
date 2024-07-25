@@ -29,6 +29,10 @@ buildscript {
         koin_version = '3.5.3'
         koin_android_version = "3.5.3"
         koin_android_compose_version = "3.5.3"
+
+        //gft
+        gft_compose_version = "1.0.0"
+        gft_coroutines_version = "1.0.1"
     }
 
     dependencies {
@@ -40,4 +44,5 @@ plugins {
     id 'com.android.library' version '8.2.2' apply false
     id 'org.jetbrains.kotlin.android' version '1.9.22' apply false
     id 'org.jetbrains.kotlin.jvm' version '1.9.22' apply false
+    id 'com.vanniktech.maven.publish' version '0.29.0' apply false
 }
