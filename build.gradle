@@ -31,7 +31,7 @@ buildscript {
         koin_android_compose_version = "3.5.3"
 
         //gft
-        gft_compose_version = "1.0.0"
+        gft_compose_version = "1.0.3"
         gft_coroutines_version = "1.0.1"
     }
 

@@ -1,4 +1,4 @@
-import com.vanniktech.maven.publish.AndroidMultiVariantLibrary
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
@@ -35,7 +35,7 @@ android {
 }
 
 mavenPublishing {
-    configure(new AndroidMultiVariantLibrary(true, true))
+    configure(new AndroidSingleVariantLibrary("release", true, true))
     coordinates(project.property("libraryGroupId") as String, "mvi-core", project.property("libraryVersion") as String)
 
     pom {
