@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        min_sdk = 29
+        min_sdk = 26
         target_sdk = 33
         compile_sdk = 34
 
@@ -31,7 +31,7 @@ buildscript {
         koin_android_compose_version = "3.5.3"
 
         //gft
-        gft_compose_version = "1.0.3"
+        gft_compose_version = "1.0.4"
         gft_coroutines_version = "1.0.1"
     }
 
