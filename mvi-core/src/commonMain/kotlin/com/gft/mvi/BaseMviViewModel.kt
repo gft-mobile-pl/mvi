@@ -8,35 +8,41 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.Optional
+import kotlin.jvm.JvmInline
 
 private const val VIEW_STATE_KEY = "MviViewMode.viewState"
 
 abstract class BaseMviViewModel<VS : ViewState, EV : ViewEvent, NE : NavigationEffect, VE : ViewEffect> private constructor(
-    private val initialState: Optional<VS>,
-    private val savedStateHandle: SavedStateHandle? = null
+    private val initialState: InitialStateContainer<VS>,
+    private val savedStateHandle: SavedStateHandle?,
 ) : ViewModel(), MviViewModel<VS, EV, NE, VE> {
 
     constructor(
         initialState: VS,
-        savedStateHandle: SavedStateHandle? = null
-    ) : this(Optional.of(initialState), savedStateHandle)
+        savedStateHandle: SavedStateHandle? = null,
+    ) : this(InitialStateContainer(initialState), savedStateHandle)
 
-    constructor() : this(Optional.empty(), null)
+    constructor() : this(InitialStateContainer(null), null)
 
     override val viewStates: StateFlow<VS> by lazy {
-        when {
-            savedStateHandle != null -> savedStateHandle.getLiveData<VS>(VIEW_STATE_KEY).let { liveData ->
-                MutableStateFlow(liveData.value ?: initialState.get()).apply {
+        if (savedStateHandle != null) {
+            MutableStateFlow(savedStateHandle.get<VS>(VIEW_STATE_KEY) ?: requireInitialState())
+                .apply {
                     viewModelScope.launch {
-                        collectLatest { newValue -> liveData.value = newValue }
+                        collectLatest { newValue -> savedStateHandle[VIEW_STATE_KEY] = newValue }
                     }
                 }
-            }
-            initialState.isPresent -> MutableStateFlow(initialState.get())
-            else -> throw IllegalArgumentException("You must either override 'val viewStates: StateFlow<VS>' or provide `initialState: VS` through constructor.")
+        } else {
+            MutableStateFlow(requireInitialState())
         }
     }
+
     override val viewEffects: StateFlow<ConsumableEvent<VE>?> = MutableStateFlow<ConsumableEvent<VE>?>(null)
     override val navigationEffects: StateFlow<ConsumableEvent<NE>?> = MutableStateFlow<ConsumableEvent<NE>?>(null)
+
+    private fun requireInitialState() = initialState.value
+        ?: throw IllegalArgumentException("You must either override 'val viewStates: StateFlow<VS>' or provide `initialState: VS` through constructor.")
+
+    @JvmInline
+    private value class InitialStateContainer<VS>(val value: VS?)
 }

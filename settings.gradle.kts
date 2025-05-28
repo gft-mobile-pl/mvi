@@ -13,10 +13,8 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "MVI"
-include ':example-compose'
-include ':mvi-core'
-include ':mvi-compose'
-include ':example-xml'
-include ':mvi-fragment-ktx'
-include ':libs:compose-gftx'
-include ':libs:coroutines-gftx'
+include(":example-compose")
+include(":mvi-core")
+include(":mvi-compose")
+include(":example-xml")
+include(":mvi-fragment-ktx")

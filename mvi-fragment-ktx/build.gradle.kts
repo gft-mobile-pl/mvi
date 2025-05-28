@@ -2,40 +2,40 @@ import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
-    id 'com.vanniktech.maven.publish'
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.maven.publish)
 }
 
 android {
-    namespace 'com.gft.mvi.fragment_ktx'
-    compileSdk compile_sdk
+    namespace = "com.gft.mvi.fragment_ktx"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk min_sdk
-        targetSdk target_sdk
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles "consumer-rules.pro"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = Java.sourceCompatibility
+        targetCompatibility = Java.targetCompatibility
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = Java.jvmTarget
     }
 }
 
 mavenPublishing {
-    configure(new AndroidSingleVariantLibrary("release", true, true))
+    configure(AndroidSingleVariantLibrary("release", true, true))
     coordinates(project.property("libraryGroupId") as String, "mvi-fragment-ktx", project.property("libraryVersion") as String)
 
     pom {
@@ -60,14 +60,14 @@ mavenPublishing {
             connection.set("scm:git:git://${project.property("libraryRepositoryUrl") as String}")
             developerConnection.set("scm:git:ssh://git@${project.property("libraryRepositoryUrl") as String}.git")
         }
-        publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-        signAllPublications()
     }
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
 }
 
 dependencies {
-    api project(':mvi-core')
+    api(project(":mvi-core"))
 
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
-    implementation "androidx.fragment:fragment-ktx:$fragment_ktx"
+    implementation(libs.androidx.lifecycle.ktx)
+    implementation(libs.androidx.fragment.ktx)
 }
