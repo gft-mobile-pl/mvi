@@ -1,38 +1,47 @@
 import com.vanniktech.maven.publish.SonatypeHost
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.maven.publish)
-    alias(libs.plugins.compose.multiplatform)
 }
 
 kotlin {
     jvm {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = Java.jvmTarget
-            }
+        compilerOptions {
+            jvmTarget = JvmTarget.fromTarget(Java.jvmTarget)
         }
     }
 
-    iosX64()
+    android {
+        namespace = "com.gft.mvi"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        compilerOptions {
+            jvmTarget = JvmTarget.fromTarget(Java.jvmTarget)
+        }
+    }
+
     iosArm64()
     iosSimulatorArm64()
 
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(libs.coroutines.core)
-            implementation(libs.viewmodel.compose)
-            implementation(libs.viewmodel.savedstate.compose)
-            implementation(libs.concurrency)
-            implementation(libs.coroutines.gftx)
+            api(libs.jetbrains.lifecycle.viewmodel)
+            api(libs.jetbrains.lifecycle.viewmodel.savedstate)
+            api(libs.kotlinx.coroutines.core)
+            api(libs.kotlinx.serialization.core)
+            implementation(libs.jetbrains.compose.runtime)
+            implementation(libs.gft.coroutines)
+            implementation(libs.gft.concurrency)
+        }
+        iosMain.dependencies {
+            implementation(libs.jetbrains.compose.ui)
         }
     }
-}
-
-compose {
-    kotlinCompilerPlugin.set(Compose.kotlinCompilerPlugin)
 }
 
 mavenPublishing {

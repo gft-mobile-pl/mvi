@@ -1,76 +1,71 @@
 [versions]
-android-compileSdk = "34"
+agp = "9.4.1"
+kotlin = "2.4.21"
+maven-publish = "0.30.0"
+
+# Android SDK
+android-compileSdk = "37"
 android-minSdk = "26"
-android-targetSdk = "33"
-agp = "8.4.0"
-kotlin = "1.9.22"
-coreKtx = "1.13.1"
-appcompat = "1.6.1"
-material = "1.12.0"
-mavenPublish = "0.29.0"
-safeargs = "2.5.0"
-lifecycle = "2.5.1"
-fragmentKtx = "1.5.5"
-composeGftx = "1.1.0"
-coroutinesGftx = "1.1.1"
-composeVersion = "1.6.5"
-composeActivity = "1.8.2"
-composeLifecycleRuntime = "2.7.0"
-constraint = "2.1.4"
-navigation = "2.7.7"
-navigationCompose = "2.7.7"
-koin = "3.5.3"
-junit = "4.13.2"
-junitTest = "1.1.5"
-espresso = "3.5.1"
-material3 = "1.2.1"
-viewmodel = "2.8.4"
-concurrency = "1.0.0"
-compose-multiplatform = "1.7.3"
-coroutines = "1.7.3"
-lifecycleRumtimeCompose = "2.8.4"
+android-targetSdk = "37"
+
+# Google AndroidX (Android-only)
+androidx-activity = "1.13.0"
+
+# JetBrains (Kotlin Multiplatform)
+jetbrains-compose = "1.12.2"
+jetbrains-compose-material3 = "1.12.0-alpha03"
+jetbrains-lifecycle = "2.11.0"
+jetbrains-navigation = "2.10.0"
+
+# KotlinX (Kotlin Multiplatform)
+kotlinx-coroutines = "1.11.0"
+kotlinx-serialization = "1.13.0"
+
+# GFT
+gft-compose = "1.1.1"
+gft-concurrency = "1.0.0"
+gft-coroutines = "1.1.2"
+
+# Dependency injection
+koin = "4.2.2"
 
 [libraries]
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-androidx-lifecycle-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
-androidx-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
-androidx-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "composeLifecycleRuntime" }
-androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtx" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "composeActivity" }
-androidx-constraint-layout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraint" }
-androidx-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }
-androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 
-androidx-compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "composeVersion" }
-androidx-compose-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "composeVersion" }
-androidx-compose-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "composeVersion" }
-androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "composeVersion" }
-androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+# KotlinX (Kotlin Multiplatform)
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
+# JetBrains (Kotlin Multiplatform)
+jetbrains-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "jetbrains-compose" }
+jetbrains-compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "jetbrains-compose" }
+jetbrains-compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "jetbrains-compose" }
+jetbrains-compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "jetbrains-compose" }
+jetbrains-compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "jetbrains-compose" }
+jetbrains-compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "jetbrains-compose-material3" }
+jetbrains-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "jetbrains-lifecycle" }
+jetbrains-lifecycle-viewmodel-savedstate = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "jetbrains-lifecycle" }
+jetbrains-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "jetbrains-lifecycle" }
+
+jetbrains-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "jetbrains-navigation" }
+
+# Google AndroidX (Android-only)
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+
+# GFT
+gft-compose = { module = "com.gft.mobile:compose", version.ref = "gft-compose" }
+gft-concurrency = { module = "com.gft.mobile:concurrency", version.ref = "gft-concurrency" }
+gft-coroutines = { module = "com.gft.mobile:coroutines", version.ref = "gft-coroutines" }
+
+# Dependency injection
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-compose= { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
 
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit-test = { group = "androidx.test.ext", name = "junit", version.ref = "junitTest" }
-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
-
-compose-gftx = { group = "com.gft.mobile", name = "compose", version.ref = "composeGftx" }
-coroutines-gftx = { group = "com.gft.mobile", name = "coroutines", version.ref = "coroutinesGftx" }
-concurrency = { group = "com.gft.mobile", name = "concurrency", version.ref = "concurrency" }
-
-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
-viewmodel-compose = { group ="org.jetbrains.androidx.lifecycle", name="lifecycle-viewmodel", version.ref="viewmodel"}
-viewmodel-savedstate-compose = { group ="org.jetbrains.androidx.lifecycle", name="lifecycle-viewmodel-savedstate", version.ref="viewmodel"}
-androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleRumtimeCompose" }
-
 [plugins]
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
 android-application = { id = "com.android.application", version.ref = "agp" }
-android-library = { id = "com.android.library", version.ref = "agp" }
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-androidx-navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "safeargs" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }

@@ -1,41 +1,49 @@
 import com.vanniktech.maven.publish.SonatypeHost
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.maven.publish)
-    alias(libs.plugins.compose.multiplatform)
 }
 
 kotlin {
     jvm {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = Java.jvmTarget
-            }
+        compilerOptions {
+            jvmTarget = JvmTarget.fromTarget(Java.jvmTarget)
         }
     }
 
-    iosX64()
+    android {
+        namespace = "com.gft.mvi.compose"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        compilerOptions {
+            jvmTarget = JvmTarget.fromTarget(Java.jvmTarget)
+        }
+    }
+    
     iosArm64()
     iosSimulatorArm64()
 
     sourceSets {
         commonMain.dependencies {
             api(project(":mvi-core"))
-            implementation(compose.runtime)
-            implementation(compose.ui)
-            implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation(libs.compose.gftx)
+            api(libs.jetbrains.lifecycle.runtime.compose)
+            implementation(libs.jetbrains.compose.runtime)
+            implementation(libs.gft.compose)
         }
     }
 }
 
-compose {
-    kotlinCompilerPlugin.set(Compose.kotlinCompilerPlugin)
-}
-
 mavenPublishing {
-    coordinates(project.property("libraryGroupId") as String, "mvi-compose", project.property("libraryVersion") as String)
+    coordinates(
+        project.property("libraryGroupId") as String,
+        "mvi-compose",
+        project.property("libraryVersion") as String
+    )
 
     pom {
         name.set(project.property("libraryNamePrefix") as String + " Compose")
