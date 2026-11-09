@@ -1,14 +1,30 @@
 # MVI ViewModel
 
-[[_TOC_]]
+* [TL;DR](#tldr)
+* [Usage](#usage)
+  * [Define contract between view and view-model](#define-contract-between-view-and-view-model)
+  * [Define view-model](#define-view-model)
+    * [Using `BaseMviViewModel`](#using-basemviviewmodel)
+    * [Using `MviViewModel` interface](#using-mviviewmodel-interface)
+    * [Updating view state](#updating-view-state)
+    * [Dispatching view effects](#dispatching-view-effects)
+    * [Dispatching navigation effects](#dispatching-navigation-effects)
+  * [Use view-model (Compose)](#use-view-model-compose)
+    * [Injecting view-model](#injecting-view-model)
+    * [Injecting view-model with Koin](#injecting-view-model-with-koin)
+    * [Handling view state changes.](#handling-view-state-changes)
+    * [Dispatching view events](#dispatching-view-events)
+    * [View state subscription lifetime](#view-state-subscription-lifetime)
+    * [Handling navigation effects](#handling-navigation-effects)
+    * [Handling view effects](#handling-view-effects)
 
 ## TL;DR
 1. Define contract:
 ```kotlin
-@Parcelize
+@Serializable
 data class ChoiceViewState(
     val randomNumber: Int
-) : ViewState, Parcelable
+) : ViewState
 
 sealed interface ChoiceViewEvent : ViewEvent {
     data class OnShowDetailsClicked(val id: String) : ChoiceViewEvent
@@ -81,7 +97,7 @@ fun ChoiceScreen(
         )
     }
     
-    // Option B (less indents!)
+    // Option B (less indents)
     val viewState by viewState(viewModel)
     Text(
         text = "${viewState.randomNumber}",
@@ -111,7 +127,7 @@ fun ChoiceScreenPreview() {
 - Navigation effects have to implemented `NavigationEffect` marker interface.
 - View effects have to implemented `ViewEffect` marker interface.
 ```kotlin
-@Parcelize
+@Serializable
 data class ChoiceViewState(
     val randomNumber: Int
 ) : ViewState, Parcelable
@@ -130,7 +146,7 @@ sealed interface ChoiceViewEffect : ViewEffect {
     data class ShowToast(val message: String) : ChoiceViewEffect
 }
 ```
-> ℹ Your view state doesn't have to implement `Parcelable` interface if you don't intend to store the view state in `SavedStateHandle`.
+> ℹ Your view state doesn't have to be annotated with @Serializable if you don't intend to store the view state in `SavedStateHandle`.
 
 > ℹ You don't have to define empty classes, e.g. if you don't need `view effect` simply don't define it. 
 
@@ -182,7 +198,7 @@ class ChoiceViewModel : BaseMviViewModel<ChoiceViewState, ChoiceViewEvent, Choic
     }
 }
 ```
-The are two constructors available:
+There are two constructors available:
 - With two parameters:
   - `initialViewState` - in the MVI (and Compose) the initial state of the view is always required.<br />
 ℹ initial data may not be a "correct" if you plan to provide the real data synchronously 
@@ -380,12 +396,9 @@ Thanks to this the whole view is not recomposed when the `viewState` changes - o
 
 #### Dispatching view events
 
-Within the scope of `ViewState` composable you should always use the `dispatchViewEvent` method, which protects against sending events from the 
-view to the ViewModel when the view is not in the required state. By default, the minimum view state required for propagating view events 
-is set to `Lifecycle.State.RESUMED`. View events are ignored if the view is visible but paused.
+Use `viewModel.onEvent(EV)` to provide view event to view model.
 
-To modify this behaviour, you can specify mininum view state for view events propagation. For example, if you pass Lifecycle.State.STARTED 
-as minActiveStateForViewEventsPropagation, view events will be disregarded as long as the screen is not visible.
+>ℹ Consider using `com.gft.compose.interaction.InteractionFilter(minActiveState: Lifecycle.State, content: @Composable () -> Unit)` to filter user input when view is not resumed or started.
 
 ```kotlin
 @Composable
@@ -396,7 +409,7 @@ fun ChoiceScreen(
     ...
     Button(
       modifier = Modifier.fillMaxWidth(),
-      onClick = { dispatchViewEvent(OnShowToastClicked) }
+      onClick = { viewModel.onEvent(OnShowToastClicked) }
     ) {
       Text(text = "Show toast")
     }
@@ -406,7 +419,7 @@ fun ChoiceScreen(
 
 #### View state subscription lifetime
 
-By default both the `ViewState` and `by viewState(viewModel)` subscribes to the `viewModel.viewStates` flow when view enters `Lifecycle.State.STARTED`
+By default, both the `ViewState` and `by viewState(viewModel)` subscribes to the `viewModel.viewStates` flow when view enters `Lifecycle.State.STARTED`
 state and cancels the subscription when view is stopped.
 
 In some rare scenarios you may want to keep the subscription alive even if the view is not visible (not in `Lifecycle.State.STARTED` state),
@@ -505,5 +518,3 @@ ViewEffect(
 > ⚠ In Compose it is impossible to handle view effects when the view is not started even if you pass `Lifecycle.State.CREATED` as minimum view state.
 All the recompositions are suspended when the view is in stopped.
 
-
-### Use view-model (View) - TBD

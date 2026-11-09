@@ -5,8 +5,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gft.compose.data.toState
 import com.gft.data.ConsumableEvent
@@ -51,33 +49,20 @@ private fun <T> ConsumeEvent(state: State<ConsumableEvent<T>?>, consumer: (T) ->
 fun <VS : ViewState, EV : ViewEvent> ViewState(
     viewModel: MviViewModel<VS, EV, *, *>,
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
-    minActiveStateForViewEventsPropagation: Lifecycle.State = Lifecycle.State.RESUMED,
-    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-    consumer: @Composable ViewStateProvider<VS, EV>.() -> Unit
+    consumer: @Composable ViewStateProvider<VS>.() -> Unit
 ) {
     val state = viewModel.viewStates.toState(minActiveState = minActiveState)
-    ViewStateProvider<VS, EV>(state) { event ->
-        if (lifecycleOwner.lifecycle.currentState.isAtLeast(minActiveStateForViewEventsPropagation)) {
-            viewModel.onEvent(event)
-        }
-    }.consumer()
+    ViewStateProvider(state).consumer()
 }
 
 @Stable
-class ViewStateProvider<VS : ViewState, EV : ViewEvent>(
+class ViewStateProvider<VS : ViewState>(
     @PublishedApi internal val state: State<VS>,
-    private val onEvent: (EV) -> Unit,
 ) {
     inline val viewState: VS
         get() {
             return state.value
         }
-
-    @Deprecated(
-        message = "Use `viewModel.onEvent(event)` instead. You should also use com.gft.compose.interaction.InteractionFilter(minActiveState: Lifecycle.State, content: @Composable () -> Unit)` to filter user input.",
-        replaceWith = ReplaceWith("viewModel.onEvent(event)")
-    )
-    fun dispatchViewEvent(event: EV) = onEvent(event)
 }
 
 @Composable
