@@ -1,7 +1,7 @@
 [versions]
 agp = "9.4.1"
 kotlin = "2.4.21"
-maven-publish = "0.30.0"
+maven-publish = "0.37.0"
 
 # Android SDK
 android-compileSdk = "37"

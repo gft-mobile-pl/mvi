@@ -1,4 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -68,6 +67,6 @@ mavenPublishing {
             developerConnection.set("scm:git:ssh://git@${project.property("libraryRepositoryUrl") as String}.git")
         }
     }
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
     signAllPublications()
 }
