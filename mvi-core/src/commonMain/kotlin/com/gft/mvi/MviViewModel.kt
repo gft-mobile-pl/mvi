@@ -13,21 +13,24 @@ interface MviViewModel<VS : ViewState, EV : ViewEvent, NE : NavigationEffect, VE
     fun onEvent(event: EV)
 
     fun MviViewModel<VS, EV, NE, VE>.dispatchNavigationEffect(effect: NE) {
-        if (navigationEffects is MutableStateFlow) (navigationEffects as MutableStateFlow).value = ConsumableEvent(effect)
+        if (navigationEffects is MutableStateFlow) (navigationEffects as MutableStateFlow).value =
+            ConsumableEvent(effect)
         else throw UnsupportedOperationException("MviViewModel.dispatchNavigationEffect extension supports MutableStateFlow only!")
     }
 
     fun MviViewModel<VS, EV, NE, VE>.clearNavigationEffect() {
-        if (navigationEffects is MutableStateFlow) (navigationEffects as MutableStateFlow).value = null
+        if (navigationEffects is MutableStateFlow) (navigationEffects as MutableStateFlow).value =
+            null
         else throw UnsupportedOperationException("MviViewModel.clearNavigationEffect extension supports MutableStateFlow only!")
     }
 
     fun MviViewModel<VS, EV, NE, VE>.dispatchViewEffect(effect: VE) {
-        if (viewEffects is MutableStateFlow) (viewEffects as MutableStateFlow).value = ConsumableEvent(effect)
+        if (viewEffects is MutableStateFlow) (viewEffects as MutableStateFlow).value =
+            ConsumableEvent(effect)
         else throw UnsupportedOperationException("MviViewModel.dispatchViewEffect extension supports MutableStateFlow only!")
     }
 
-    fun MviViewModel<VS, EV, NE, VE>.clearViewEffect(effect: VE) {
+    fun MviViewModel<VS, EV, NE, VE>.clearViewEffect() {
         if (viewEffects is MutableStateFlow) (viewEffects as MutableStateFlow).value = null
         else throw UnsupportedOperationException("MviViewModel.clearViewEffect extension supports MutableStateFlow only!")
     }
