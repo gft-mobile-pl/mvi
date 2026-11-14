@@ -28,8 +28,8 @@ data class ChoiceViewState(
 
 sealed interface ChoiceViewEvent : ViewEvent {
     data class OnShowDetailsClicked(val id: String) : ChoiceViewEvent
-    object OnDrawNumberClicked : ChoiceViewEvent
-    object OnShowToastClicked : ChoiceViewEvent
+    data object OnDrawNumberClicked : ChoiceViewEvent
+    data object OnShowToastClicked : ChoiceViewEvent
 }
 
 sealed interface ChoiceNavigationEffect : NavigationEffect {
@@ -45,7 +45,7 @@ sealed interface ChoiceViewEffect : ViewEffect {
 class ChoiceViewModel(
     savedStateHandle: SavedStateHandle,
 ) : BaseMviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect>(
-    ChoiceViewState(0), savedStateHandle
+    ChoiceViewState(0), savedStateHandle, ChoiceViewState.serializer()
 ) {
     override fun onEvent(event: ChoiceViewEvent) {
 
@@ -72,7 +72,8 @@ fun ChoiceScreen(
     viewModel: MviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect> = koinViewModel<ChoiceViewModel>(),
     onNavigateToDetails: (String) -> Unit
 ) {
-
+    val context = LocalContext.current
+  
     NavigationEffect(viewModel) { effect ->
         when (effect) {
             is NavigateToDetails -> {
@@ -130,12 +131,12 @@ fun ChoiceScreenPreview() {
 @Serializable
 data class ChoiceViewState(
     val randomNumber: Int
-) : ViewState, Parcelable
+) : ViewState
 
 sealed interface ChoiceViewEvent : ViewEvent {
     data class OnShowDetailsClicked(val id: String) : ChoiceViewEvent
-    object OnDrawNumberClicked : ChoiceViewEvent
-    object OnShowToastClicked : ChoiceViewEvent
+    data object OnDrawNumberClicked : ChoiceViewEvent
+    data object OnShowToastClicked : ChoiceViewEvent
 }
 
 sealed interface ChoiceNavigationEffect : NavigationEffect {
@@ -146,7 +147,8 @@ sealed interface ChoiceViewEffect : ViewEffect {
     data class ShowToast(val message: String) : ChoiceViewEffect
 }
 ```
-> ℹ Your view state doesn't have to be annotated with @Serializable if you don't intend to store the view state in `SavedStateHandle`.
+> ℹ Your view state doesn't have to be annotated with `@Serializable` if you don't intend to store the view state in `SavedStateHandle`.  
+> If you do, the generated serializer (`ChoiceViewState.serializer()` or `serializer<ChoiceViewState>()`) has to be passed to `BaseMviViewModel` - see [Using `BaseMviViewModel`](#using-basemviviewmodel).
 
 > ℹ You don't have to define empty classes, e.g. if you don't need `view effect` simply don't define it. 
 
@@ -178,7 +180,17 @@ The only requirement is to implement `MviViewModel` interface, but 99% of the ti
 class ChoiceViewModel(
     savedStateHandle: SavedStateHandle,
 ) : BaseMviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect>(
-    ChoiceViewState(0), savedStateHandle
+    ChoiceViewState(0), savedStateHandle, ChoiceViewState.serializer()
+) {
+    override fun onEvent(event: ChoiceViewEvent) {
+
+    }
+}
+
+// or (view state is not saved/restored)
+
+class ChoiceViewModel : BaseMviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect>(
+    ChoiceViewState(0)
 ) {
     override fun onEvent(event: ChoiceViewEvent) {
 
@@ -187,7 +199,7 @@ class ChoiceViewModel(
 
 // or
 
-class ChoiceViewModel : BaseMviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect>() {
+class ChoiceViewModel(streamData: StreamUserChoiceDataUseCase) : BaseMviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect>() {
 
     override val viewStates = streamData()
         .map { data -> ChoiceViewState(data) }
@@ -198,12 +210,17 @@ class ChoiceViewModel : BaseMviViewModel<ChoiceViewState, ChoiceViewEvent, Choic
     }
 }
 ```
-There are two constructors available:
-- With two parameters:
-  - `initialViewState` - in the MVI (and Compose) the initial state of the view is always required.<br />
+There are three constructors available:
+- With three parameters - `(initialState, savedStateHandle, viewStateSerializer)`:
+  - `initialState` - in the MVI (and Compose) the initial state of the view is always required.<br />
 ℹ initial data may not be a "correct" if you plan to provide the real data synchronously 
 in the `init` block (e.g. using `launch(start = CoroutineStart.UNDISPATCHED) {}`) 
-  - `savedStateHandle` (optional) - if you pass `SavedStateHandle` to the `BaseMviViewModel` it will automatically save/restore the view state when activity is killed/recreated.
+  - `savedStateHandle` - the `BaseMviViewModel` will automatically save/restore the view state when activity is killed/recreated.
+  - `viewStateSerializer` - `KSerializer` of the `@Serializable` view state, e.g. `ChoiceViewState.serializer()` or `serializer<ChoiceViewState>()`.
+  It is required because the view state type is erased at runtime and the view state is stored in `SavedStateHandle` using `kotlinx.serialization`.
+- With one parameter - `(initialState)`:
+  - Same as above, but the view state is **not** saved/restored. Use it when the view state doesn't need to survive process death
+  or can't be serialized.
 - With no parameters:
   - If you use this constructor you must override `val viewStates: StateFlow` property.
   If you don't do this an exception will be thrown on runtime when the `viewStates` is accessed for the first time.
@@ -240,7 +257,7 @@ override val viewEffects: StateFlow<ConsumableEvent<ChoiceViewEffect>?> = Mutabl
 Alternatively you may use backing fields to avoid this issue:
 ```kotlin
 private val _viewEffects = MutableStateFlow<ConsumableEvent<ChoiceViewEffect>?>(null)
-override val viewEffects: StateFlow<ConsumableEvent<ChoiceViewEffect>?> = _viewEffect
+override val viewEffects: StateFlow<ConsumableEvent<ChoiceViewEffect>?> = _viewEffects
 ```
 Note: you will be still able to mutate the view state even if you choose the first option (defining and assigning at the same time) - the `dispatchViewEffect`, `dispatchNavigationEffect` and `val viewState` 
 extension methods check the real type of the `flow` and perform necessary casting if required. 
@@ -280,7 +297,7 @@ If you extend `BaseMviViewModel` OR your custom view-model assigns `MutableState
 ```kotlin
 class ChoiceViewModel ... {
     ... 
-    private fun navigateToCardDetails() {
+    private fun navigateToCardDetails(event: OnShowDetailsClicked) {
         dispatchNavigationEffect(NavigateToDetails(event.id))
     }
     ...
@@ -430,7 +447,7 @@ You may specify the minimum lifecycle state at which the subscription is active 
 ViewState(
     viewModel = viewModel,
     minActiveState = Lifecycle.State.CREATED
-) { effect ->
+) {
 
 }
 ```
@@ -490,6 +507,7 @@ fun ChoiceScreen(
     viewModel: MviViewModel<ChoiceViewState, ChoiceViewEvent, ChoiceNavigationEffect, ChoiceViewEffect> = koinViewModel<ChoiceViewModel>(),
     onNavigateToDetails: (String) -> Unit
 ) {
+    ...
     ViewEffect(viewModel) { effect ->
         when (effect) {
             is ShowToast -> Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
