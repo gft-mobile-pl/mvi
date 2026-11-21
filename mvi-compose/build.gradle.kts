@@ -16,7 +16,11 @@ kotlin {
 
     android {
         namespace = "com.gft.mvi.compose"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        compileSdk {
+            version = release(libs.versions.android.compileSdk.get().toInt()) {
+                minorApiLevel = libs.versions.android.compileSdkMinor.get().toInt()
+            }
+        }
         minSdk = libs.versions.android.minSdk.get().toInt()
 
         compilerOptions {
@@ -30,8 +34,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":mvi-core"))
-            api(libs.jetbrains.lifecycle.runtime.compose)
-            implementation(libs.jetbrains.compose.runtime)
+            api(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.gft.compose)
         }
     }

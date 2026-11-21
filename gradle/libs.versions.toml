@@ -1,70 +1,75 @@
 [versions]
+# Build toolchain
 agp = "9.4.1"
 kotlin = "2.4.21"
 maven-publish = "0.37.0"
 
 # Android SDK
 android-compileSdk = "37"
+android-compileSdkMinor = "1"
 android-minSdk = "26"
 android-targetSdk = "37"
 
-# Google AndroidX (Android-only)
-androidx-activity = "1.13.0"
-
-# JetBrains (Kotlin Multiplatform)
+# Multiplatform libraries
 jetbrains-compose = "1.12.2"
 jetbrains-compose-material3 = "1.12.0-alpha03"
-jetbrains-lifecycle = "2.11.0"
 jetbrains-navigation = "2.10.0"
+androidx-lifecycle = "2.11.1"
+
+# Android libraries
+androidx-activity = "1.13.0"
+androidx-compose-ui-tooling = "1.12.1"
 
 # KotlinX (Kotlin Multiplatform)
-kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.13.0"
 
 # GFT
-gft-compose = "1.1.1"
+gft-compose = "1.1.2"
 gft-concurrency = "1.0.0"
 gft-coroutines = "1.1.2"
 
-# Dependency injection
-koin = "4.2.2"
+# Dependency BOMs
+koin-bom = "4.2.2"
 
 [libraries]
 
-# KotlinX (Kotlin Multiplatform)
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
-kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-
-# JetBrains (Kotlin Multiplatform)
+# Compose Multiplatform (shared UI)
 jetbrains-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "jetbrains-compose" }
 jetbrains-compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "jetbrains-compose" }
 jetbrains-compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "jetbrains-compose" }
-jetbrains-compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "jetbrains-compose" }
 jetbrains-compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "jetbrains-compose" }
 jetbrains-compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "jetbrains-compose-material3" }
-jetbrains-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "jetbrains-lifecycle" }
-jetbrains-lifecycle-viewmodel-savedstate = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "jetbrains-lifecycle" }
-jetbrains-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "jetbrains-lifecycle" }
-
 jetbrains-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "jetbrains-navigation" }
 
-# Google AndroidX (Android-only)
+# AndroidX Multiplatform
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "androidx-lifecycle" }
+
+# Jetpack Compose (Android only)
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-compose-ui-tooling" }
+
+# Platform specific (Android only)
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+
+# KotlinX (Kotlin Multiplatform)
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 # GFT
 gft-compose = { module = "com.gft.mobile:compose", version.ref = "gft-compose" }
 gft-concurrency = { module = "com.gft.mobile:concurrency", version.ref = "gft-concurrency" }
 gft-coroutines = { module = "com.gft.mobile:coroutines", version.ref = "gft-coroutines" }
 
-# Dependency injection
-koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
-koin-compose= { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+# Koin
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
+koin-android = { module = "io.insert-koin:koin-android" }
+koin-android-compose = { module = "io.insert-koin:koin-androidx-compose" }
 
 [plugins]
-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }

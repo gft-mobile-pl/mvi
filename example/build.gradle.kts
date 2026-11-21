@@ -20,23 +20,27 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.jetbrains.navigation.compose)
 
-    implementation(libs.jetbrains.compose.runtime)
     implementation(libs.jetbrains.compose.foundation)
     implementation(libs.jetbrains.compose.ui)
     implementation(libs.jetbrains.compose.material3)
 
     implementation(libs.jetbrains.compose.ui.tooling.preview)
-    debugImplementation(libs.jetbrains.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.tooling)
 
     implementation(libs.gft.compose)
 
+    implementation(platform(libs.koin.bom))
     implementation(libs.koin.android)
-    implementation(libs.koin.compose)
+    implementation(libs.koin.android.compose)
 }
 
 android {
     namespace = "com.gft.example.mvi"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk {
+        version = release(libs.versions.android.compileSdk.get().toInt()) {
+            minorApiLevel = libs.versions.android.compileSdkMinor.get().toInt()
+        }
+    }
 
     defaultConfig {
         applicationId = "com.gft.example.mvi"
