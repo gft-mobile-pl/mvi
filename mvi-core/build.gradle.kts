@@ -15,7 +15,11 @@ kotlin {
 
     android {
         namespace = "com.gft.mvi"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        compileSdk {
+            version = release(libs.versions.android.compileSdk.get().toInt()) {
+                minorApiLevel = libs.versions.android.compileSdkMinor.get().toInt()
+            }
+        }
         minSdk = libs.versions.android.minSdk.get().toInt()
 
         compilerOptions {
@@ -28,9 +32,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            api(libs.jetbrains.lifecycle.viewmodel)
-            api(libs.jetbrains.lifecycle.viewmodel.savedstate)
-            api(libs.kotlinx.coroutines.core)
+            api(libs.androidx.lifecycle.viewmodel)
+            api(libs.androidx.lifecycle.viewmodel.savedstate)
             api(libs.kotlinx.serialization.core)
             implementation(libs.jetbrains.compose.runtime)
             implementation(libs.gft.coroutines)
